@@ -1,12 +1,12 @@
 # Local File Renamer
 
-Local File Renamer is a small macOS app for building a CSV rename plan from a local folder and then applying that plan to real files on your computer.
+Local File Renamer is a small macOS app for building a CSV or spreadsheet rename plan from a local folder and then applying that plan to real files on your computer.
 
 ## Download
 
 Download the latest Apple Silicon build from the public releases page:
 
-- [Local File Renamer v1.0 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.0/Local_File_Renamer_v1_0_macOS_Apple_Silicon.zip)
+- [Local File Renamer v1.1 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.1/Local_File_Renamer_v1_1_macOS_Apple_Silicon.zip)
 
 ## Compatibility
 
@@ -21,11 +21,10 @@ This public build is ad-hoc signed. For the smoothest double-click launch experi
 ## What It Does
 
 - Scans a selected local folder.
-- Writes a CSV with `folder_location`, `current_name`, `desired_name`, and `status`.
-- Lets you load an edited CSV rename plan.
-- Lets you add a single rename row directly in the app.
+- Writes a CSV or `.xlsx` spreadsheet with `folder_location`, `current_name`, `desired_name`, and `status`.
+- Lets you browse to and load an edited CSV or spreadsheet rename plan.
 - Renames actual files after you click `Run Renames` and confirm.
-- Writes status results back to the CSV when a CSV is loaded.
+- Writes status results back to the loaded rename plan.
 
 ## CSV Format
 
@@ -34,7 +33,7 @@ folder_location,current_name,desired_name,status
 /Users/me/Desktop/files,old-name.txt,new-name.txt,
 ```
 
-`desired_name` must be a file name only, not a path. Existing files are not overwritten unless you enable the overwrite option in the app.
+The `.xlsx` spreadsheet uses the same columns. `desired_name` must be a file name only, not a path. Existing files are not overwritten unless you enable the overwrite option in the app.
 
 ## Build Locally
 
@@ -45,8 +44,8 @@ python3 -m unittest discover -s tests
 
 The build creates:
 
-- `dist/Local File Renamer V1_0.app`
-- `downloads/Local_File_Renamer_v1_0_macOS_Apple_Silicon.zip`
+- `dist/Local File Renamer V1_1.app`
+- `downloads/Local_File_Renamer_v1_1_macOS_Apple_Silicon.zip`
 
 ## Notarized Public Release
 

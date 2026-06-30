@@ -3,14 +3,21 @@ from __future__ import annotations
 import csv
 import os
 import uuid
+import zipfile
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, List
+from xml.etree import ElementTree as ET
 
 
 APP_NAME = "Local File Renamer"
-APP_VERSION = "1.0"
+APP_VERSION = "1.1"
 CSV_HEADERS = ["folder_location", "current_name", "desired_name", "status"]
+PLAN_EXTENSIONS = (".csv", ".xlsx")
+XML_MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+XML_REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+XML_PACKAGE_REL_NS = "http://schemas.openxmlformats.org/package/2006/relationships"
 
 
 class RenameError(ValueError):
@@ -86,6 +93,12 @@ def write_scan_csv(folder_location: str, csv_path: str, recursive: bool = False)
     return rows
 
 
+def write_scan_plan(folder_location: str, plan_path: str, recursive: bool = False) -> List[RenameRow]:
+    rows = scan_folder(folder_location, recursive=recursive)
+    write_rename_plan(plan_path, rows)
+    return rows
+
+
 def load_rename_csv(csv_path: str) -> List[RenameRow]:
     path = Path(csv_path).expanduser()
     if not path.exists():
@@ -99,6 +112,18 @@ def load_rename_csv(csv_path: str) -> List[RenameRow]:
         return [RenameRow.from_mapping(row) for row in reader]
 
 
+def load_rename_plan(plan_path: str) -> List[RenameRow]:
+    path = Path(plan_path).expanduser()
+    suffix = path.suffix.lower()
+
+    if suffix == ".csv":
+        return load_rename_csv(str(path))
+    if suffix == ".xlsx":
+        return load_rename_xlsx(str(path))
+
+    raise RenameError("Rename plan must be a .csv or .xlsx file.")
+
+
 def write_rename_csv(csv_path: str, rows: Iterable[RenameRow]) -> None:
     path = Path(csv_path).expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -108,6 +133,72 @@ def write_rename_csv(csv_path: str, rows: Iterable[RenameRow]) -> None:
         writer.writeheader()
         for row in rows:
             writer.writerow(row.to_csv_row())
+
+
+def write_rename_plan(plan_path: str, rows: Iterable[RenameRow]) -> None:
+    path = Path(plan_path).expanduser()
+    suffix = path.suffix.lower()
+
+    if suffix == ".csv":
+        write_rename_csv(str(path), rows)
+        return
+    if suffix == ".xlsx":
+        write_rename_xlsx(str(path), rows)
+        return
+
+    raise RenameError("Rename plan must be saved as .csv or .xlsx.")
+
+
+def load_rename_xlsx(xlsx_path: str) -> List[RenameRow]:
+    path = Path(xlsx_path).expanduser()
+    if not path.exists():
+        raise RenameError(f"Spreadsheet does not exist: {path}")
+
+    try:
+        with zipfile.ZipFile(path, "r") as archive:
+            sheet_path = _first_worksheet_path(archive)
+            shared_strings = _read_shared_strings(archive)
+            worksheet = ET.fromstring(archive.read(sheet_path))
+    except (KeyError, ET.ParseError, zipfile.BadZipFile) as exc:
+        raise RenameError(f"Could not read spreadsheet: {exc}") from exc
+
+    table = _worksheet_to_table(worksheet, shared_strings)
+    if not table:
+        return []
+
+    headers = [cell.strip() for cell in table[0]]
+    missing = [header for header in CSV_HEADERS[:3] if header not in headers]
+    if missing:
+        raise RenameError(f"Spreadsheet is missing required column(s): {', '.join(missing)}")
+
+    rows: List[RenameRow] = []
+    for values in table[1:]:
+        mapping = {header: values[index] if index < len(values) else "" for index, header in enumerate(headers)}
+        if any((mapping.get(header) or "").strip() for header in CSV_HEADERS):
+            rows.append(RenameRow.from_mapping(mapping))
+
+    return rows
+
+
+def write_rename_xlsx(xlsx_path: str, rows: Iterable[RenameRow]) -> None:
+    path = Path(xlsx_path).expanduser()
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    row_values = [CSV_HEADERS]
+    row_values.extend([[row.folder_location, row.current_name, row.desired_name, row.status] for row in rows])
+
+    ET.register_namespace("", XML_MAIN_NS)
+    ET.register_namespace("r", XML_REL_NS)
+
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", _xlsx_content_types_xml())
+        archive.writestr("_rels/.rels", _xlsx_root_rels_xml())
+        archive.writestr("docProps/app.xml", _xlsx_app_xml())
+        archive.writestr("docProps/core.xml", _xlsx_core_xml())
+        archive.writestr("xl/workbook.xml", _xlsx_workbook_xml())
+        archive.writestr("xl/_rels/workbook.xml.rels", _xlsx_workbook_rels_xml())
+        archive.writestr("xl/styles.xml", _xlsx_styles_xml())
+        archive.writestr("xl/worksheets/sheet1.xml", _xlsx_sheet_xml(row_values))
 
 
 def rename_rows(rows: Iterable[RenameRow], allow_overwrite: bool = False) -> List[RenameRow]:
@@ -189,3 +280,182 @@ def _rename_case_only(source: Path, target: Path) -> None:
     temp = source.with_name(temp_name)
     source.rename(temp)
     temp.rename(target)
+
+
+def _first_worksheet_path(archive: zipfile.ZipFile) -> str:
+    try:
+        workbook = ET.fromstring(archive.read("xl/workbook.xml"))
+        rels = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
+    except KeyError:
+        return "xl/worksheets/sheet1.xml"
+
+    sheet = workbook.find(f".//{{{XML_MAIN_NS}}}sheet")
+    if sheet is None:
+        return "xl/worksheets/sheet1.xml"
+
+    rel_id = sheet.attrib.get(f"{{{XML_REL_NS}}}id")
+    if not rel_id:
+        return "xl/worksheets/sheet1.xml"
+
+    for rel in rels.findall(f"{{{XML_PACKAGE_REL_NS}}}Relationship"):
+        if rel.attrib.get("Id") == rel_id:
+            target = rel.attrib.get("Target", "worksheets/sheet1.xml")
+            if target.startswith("/"):
+                return target.lstrip("/")
+            return "xl/" + target.lstrip("/")
+
+    return "xl/worksheets/sheet1.xml"
+
+
+def _read_shared_strings(archive: zipfile.ZipFile) -> List[str]:
+    try:
+        root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+    except KeyError:
+        return []
+
+    strings: List[str] = []
+    for item in root.findall(f"{{{XML_MAIN_NS}}}si"):
+        strings.append("".join(text.text or "" for text in item.findall(f".//{{{XML_MAIN_NS}}}t")))
+    return strings
+
+
+def _worksheet_to_table(root: ET.Element, shared_strings: List[str]) -> List[List[str]]:
+    table: List[List[str]] = []
+
+    for row in root.findall(f".//{{{XML_MAIN_NS}}}row"):
+        values: List[str] = []
+        for cell in row.findall(f"{{{XML_MAIN_NS}}}c"):
+            cell_ref = cell.attrib.get("r", "")
+            index = _cell_column_index(cell_ref)
+            while len(values) < index:
+                values.append("")
+            values.append(_xlsx_cell_value(cell, shared_strings))
+        table.append(values)
+
+    return table
+
+
+def _xlsx_cell_value(cell: ET.Element, shared_strings: List[str]) -> str:
+    cell_type = cell.attrib.get("t")
+
+    if cell_type == "inlineStr":
+        return "".join(text.text or "" for text in cell.findall(f".//{{{XML_MAIN_NS}}}t")).strip()
+
+    value = cell.find(f"{{{XML_MAIN_NS}}}v")
+    raw = value.text if value is not None and value.text is not None else ""
+
+    if cell_type == "s":
+        try:
+            return shared_strings[int(raw)].strip()
+        except (ValueError, IndexError):
+            return ""
+
+    return raw.strip()
+
+
+def _cell_column_index(cell_ref: str) -> int:
+    letters = "".join(char for char in cell_ref if char.isalpha()).upper()
+    if not letters:
+        return 0
+
+    index = 0
+    for char in letters:
+        index = index * 26 + (ord(char) - ord("A") + 1)
+    return index - 1
+
+
+def _column_name(index: int) -> str:
+    name = ""
+    index += 1
+    while index:
+        index, remainder = divmod(index - 1, 26)
+        name = chr(ord("A") + remainder) + name
+    return name
+
+
+def _xlsx_sheet_xml(rows: List[List[str]]) -> str:
+    root = ET.Element(f"{{{XML_MAIN_NS}}}worksheet")
+    sheet_data = ET.SubElement(root, f"{{{XML_MAIN_NS}}}sheetData")
+
+    for row_index, row_values in enumerate(rows, start=1):
+        row_el = ET.SubElement(sheet_data, f"{{{XML_MAIN_NS}}}row", {"r": str(row_index)})
+        for col_index, value in enumerate(row_values):
+            cell_ref = f"{_column_name(col_index)}{row_index}"
+            cell_el = ET.SubElement(row_el, f"{{{XML_MAIN_NS}}}c", {"r": cell_ref, "t": "inlineStr"})
+            inline = ET.SubElement(cell_el, f"{{{XML_MAIN_NS}}}is")
+            text = ET.SubElement(inline, f"{{{XML_MAIN_NS}}}t")
+            text.text = str(value)
+
+    return _xml_bytes(root)
+
+
+def _xlsx_content_types_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>"""
+
+
+def _xlsx_root_rels_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+</Relationships>"""
+
+
+def _xlsx_workbook_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="Rename Plan" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>"""
+
+
+def _xlsx_workbook_rels_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>"""
+
+
+def _xlsx_styles_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="1"><font><sz val="11"/><name val="Aptos"/></font></fonts>
+  <fills count="1"><fill><patternFill patternType="none"/></fill></fills>
+  <borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+  <cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>
+</styleSheet>"""
+
+
+def _xlsx_app_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>Local File Renamer</Application>
+</Properties>"""
+
+
+def _xlsx_core_xml() -> str:
+    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:creator>Local File Renamer</dc:creator>
+  <cp:lastModifiedBy>Local File Renamer</cp:lastModifiedBy>
+  <dcterms:created xsi:type="dcterms:W3CDTF">{now}</dcterms:created>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">{now}</dcterms:modified>
+</cp:coreProperties>"""
+
+
+def _xml_bytes(root: ET.Element) -> str:
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True).decode("utf-8")

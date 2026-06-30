@@ -6,9 +6,12 @@ from pathlib import Path
 from local_file_renamer_core import (
     RenameRow,
     load_rename_csv,
+    load_rename_plan,
     rename_rows,
     scan_folder,
     write_scan_csv,
+    write_scan_plan,
+    write_rename_plan,
 )
 
 
@@ -49,6 +52,31 @@ class LocalFileRenamerCoreTests(unittest.TestCase):
 
             rows = load_rename_csv(str(csv_path))
             self.assertEqual(rows[0].current_name, "one.txt")
+
+    def test_write_scan_xlsx_round_trips_required_headers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "one.txt").write_text("1", encoding="utf-8")
+            xlsx_path = root / "plan.xlsx"
+
+            write_scan_plan(str(root), str(xlsx_path))
+            rows = load_rename_plan(str(xlsx_path))
+
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0].folder_location, str(root))
+            self.assertEqual(rows[0].current_name, "one.txt")
+            self.assertEqual(rows[0].desired_name, "")
+
+    def test_write_rename_xlsx_preserves_status(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            xlsx_path = root / "plan.xlsx"
+            rows = [RenameRow(str(root), "old.txt", "new.txt", "Ready")]
+
+            write_rename_plan(str(xlsx_path), rows)
+            loaded = load_rename_plan(str(xlsx_path))
+
+            self.assertEqual(loaded[0].status, "Ready")
 
     def test_rename_rows_renames_file_and_updates_status(self):
         with tempfile.TemporaryDirectory() as tmp:
