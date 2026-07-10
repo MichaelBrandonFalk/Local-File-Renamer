@@ -26,6 +26,7 @@ cd "$PROJECT_DIR"
   --windowed \
   --target-architecture arm64 \
   --name "$APP_NAME" \
+  --icon "$PROJECT_DIR/assets/local_file_renamer.icns" \
   --hidden-import tkinter \
   local_file_renamer_app.py
 

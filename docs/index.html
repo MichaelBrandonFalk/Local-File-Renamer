@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Local File Renamer</title>
+  <link rel="icon" type="image/png" href="assets/local_file_renamer_icon.png">
+  <link rel="apple-touch-icon" href="assets/local_file_renamer_icon.png">
   <style>
     :root {
       color-scheme: light;
@@ -61,6 +63,18 @@
       padding: 6px 12px;
       font-size: 0.9rem;
       font-weight: 800;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .app-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(84, 63, 117, 0.22);
     }
     h1 {
       max-width: 680px;
@@ -242,11 +256,14 @@
   <main>
     <div class="hero">
       <div class="intro">
-        <div class="eyebrow">Apple Silicon macOS app</div>
+        <div class="brand-row">
+          <img class="app-icon" src="assets/local_file_renamer_icon.png" alt="">
+          <div class="eyebrow">Apple Silicon macOS app</div>
+        </div>
         <h1>Local File Renamer</h1>
         <p>Scan a Mac folder, export a CSV or spreadsheet rename plan, load the edited plan, then rename local files with a confirmation step.</p>
         <div class="actions">
-          <a class="button download" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.1/Local_File_Renamer_v1_1_macOS_Apple_Silicon.zip">Download v1.1</a>
+          <a class="button download" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.2/Local_File_Renamer_v1_2_macOS_Apple_Silicon.zip">Download v1.2</a>
           <a class="button secondary" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer">View Source</a>
         </div>
       </div>

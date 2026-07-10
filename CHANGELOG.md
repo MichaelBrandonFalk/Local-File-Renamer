@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2 - 2026-07-10
+
+- Added a custom pomegranate tile app icon.
+- Generated and applied a full macOS `.icns` icon set.
+- Added the icon to the public download page.
+
 ## 1.1 - 2026-06-30
 
 - Refreshed the desktop app with a soft purple and grey layout.
