@@ -12,7 +12,7 @@ from xml.etree import ElementTree as ET
 
 
 APP_NAME = "Local File Renamer"
-APP_VERSION = "1.2"
+APP_VERSION = "1.3"
 CSV_HEADERS = ["folder_location", "current_name", "desired_name", "status"]
 PLAN_EXTENSIONS = (".csv", ".xlsx")
 XML_MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"

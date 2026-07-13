@@ -6,7 +6,7 @@ Local File Renamer is a small macOS app for building a CSV or spreadsheet rename
 
 Download the latest Apple Silicon build from the public releases page:
 
-- [Local File Renamer v1.2 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.2/Local_File_Renamer_v1_2_macOS_Apple_Silicon.zip)
+- [Local File Renamer v1.3 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.3/Local_File_Renamer_v1_3_macOS_Apple_Silicon.zip)
 
 ## Compatibility
 
@@ -45,8 +45,8 @@ python3 -m unittest discover -s tests
 
 The build creates:
 
-- `dist/Local File Renamer V1_2.app`
-- `downloads/Local_File_Renamer_v1_2_macOS_Apple_Silicon.zip`
+- `dist/Local File Renamer V1_3.app`
+- `downloads/Local_File_Renamer_v1_3_macOS_Apple_Silicon.zip`
 
 ## Notarized Public Release
 
