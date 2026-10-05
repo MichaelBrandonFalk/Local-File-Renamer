@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import csv
+import errno
 import os
+import stat
 import uuid
 import zipfile
 from dataclasses import dataclass
@@ -12,7 +14,7 @@ from xml.etree import ElementTree as ET
 
 
 APP_NAME = "Local File Renamer"
-APP_VERSION = "1.3"
+APP_VERSION = "1.4"
 CSV_HEADERS = ["folder_location", "current_name", "desired_name", "status"]
 PLAN_EXTENSIONS = (".csv", ".xlsx")
 XML_MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -22,6 +24,15 @@ XML_PACKAGE_REL_NS = "http://schemas.openxmlformats.org/package/2006/relationshi
 
 class RenameError(ValueError):
     """Raised when a rename plan has invalid user input."""
+
+
+class EmptyScanError(RenameError):
+    def __init__(self, folder_location: str, recursive: bool) -> None:
+        scope = "in this folder or its subfolders" if recursive else "directly in this folder"
+        message = f"No files found {scope}:\n{folder_location}\n\nNo export was saved."
+        if not recursive:
+            message += " Enable Include subfolders to scan inside folders."
+        super().__init__(message)
 
 
 @dataclass
@@ -50,12 +61,29 @@ class RenameRow:
 
 
 def normalize_folder(folder_location: str) -> Path:
-    folder = Path(folder_location).expanduser()
-    if not folder.exists():
-        raise RenameError(f"Folder does not exist: {folder}")
-    if not folder.is_dir():
+    if not folder_location.strip():
+        raise RenameError("Choose a folder first.")
+    folder = Path(folder_location).expanduser().absolute()
+    try:
+        mode = folder.stat().st_mode
+    except FileNotFoundError as exc:
+        raise RenameError(f"Folder does not exist: {folder}") from exc
+    except OSError as exc:
+        raise _scan_error(folder, exc) from exc
+    if not stat.S_ISDIR(mode):
         raise RenameError(f"Not a folder: {folder}")
     return folder
+
+
+def _scan_error(path: Path, exc: OSError) -> RenameError:
+    if exc.errno in {errno.EACCES, errno.EPERM}:
+        return RenameError(
+            f"Permission denied while reading:\n{path}\n\n"
+            "Choose the folder with Browse and allow access if macOS asks. "
+            "If access is still blocked, check System Settings > Privacy & Security > "
+            "Files and Folders for Local File Renamer."
+        )
+    return RenameError(f"Could not read {path}: {exc}")
 
 
 def validate_file_name(file_name: str, field_label: str) -> str:
@@ -73,8 +101,28 @@ def validate_file_name(file_name: str, field_label: str) -> str:
 
 def scan_folder(folder_location: str, recursive: bool = False) -> List[RenameRow]:
     folder = normalize_folder(folder_location)
-    iterator = folder.rglob("*") if recursive else folder.iterdir()
-    files = sorted((path for path in iterator if path.is_file()), key=lambda p: str(p).lower())
+    pending = [folder]
+    files = []
+    # Explicit stat and scandir calls surface access failures instead of omitting files.
+    while pending:
+        current_folder = pending.pop()
+        try:
+            with os.scandir(current_folder) as entries:
+                for entry in entries:
+                    path = Path(entry.path)
+                    try:
+                        mode = entry.stat().st_mode
+                    except FileNotFoundError:
+                        continue
+                    except OSError as exc:
+                        raise _scan_error(path, exc) from exc
+                    if stat.S_ISREG(mode):
+                        files.append(path)
+                    elif recursive and stat.S_ISDIR(mode) and not entry.is_symlink():
+                        pending.append(path)
+        except OSError as exc:
+            raise _scan_error(current_folder, exc) from exc
+    files.sort(key=lambda path: str(path).lower())
 
     return [
         RenameRow(
@@ -89,12 +137,16 @@ def scan_folder(folder_location: str, recursive: bool = False) -> List[RenameRow
 
 def write_scan_csv(folder_location: str, csv_path: str, recursive: bool = False) -> List[RenameRow]:
     rows = scan_folder(folder_location, recursive=recursive)
+    if not rows:
+        raise EmptyScanError(folder_location, recursive)
     write_rename_csv(csv_path, rows)
     return rows
 
 
 def write_scan_plan(folder_location: str, plan_path: str, recursive: bool = False) -> List[RenameRow]:
     rows = scan_folder(folder_location, recursive=recursive)
+    if not rows:
+        raise EmptyScanError(folder_location, recursive)
     write_rename_plan(plan_path, rows)
     return rows
 

@@ -6,7 +6,7 @@ Local File Renamer is a small macOS app for building a CSV or spreadsheet rename
 
 Download the latest Apple Silicon build from the public releases page:
 
-- [Local File Renamer v1.3 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.3/Local_File_Renamer_v1_3_macOS_Apple_Silicon.zip)
+- [Local File Renamer v1.4 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.4/Local_File_Renamer_v1_4_macOS_Apple_Silicon.zip)
 
 ## Compatibility
 
@@ -21,6 +21,8 @@ This public build is ad-hoc signed. For the smoothest double-click launch experi
 ## What It Does
 
 - Scans a selected local folder.
+- Offers to scan subfolders when the selected folder has no files directly inside it.
+- Reports permission errors and prevents empty scans from saving a blank export.
 - Writes a CSV or `.xlsx` spreadsheet with `folder_location`, `current_name`, `desired_name`, and `status`.
 - Lets you browse to and load an edited CSV or spreadsheet rename plan.
 - Renames actual files after you click `Run Renames` and confirm.
@@ -36,6 +38,8 @@ folder_location,current_name,desired_name,status
 
 The `.xlsx` spreadsheet uses the same columns. `desired_name` must be a file name only, not a path. Existing files are not overwritten unless you enable the overwrite option in the app.
 
+Exports populate `folder_location` and `current_name` for each file found. The `desired_name` and `status` columns start blank. Enable `Include subfolders` to list files inside nested folders. If macOS blocks access, choose the folder with `Browse` and grant the app access in System Settings > Privacy & Security > Files and Folders.
+
 ## Build Locally
 
 ```bash
@@ -45,8 +49,8 @@ python3 -m unittest discover -s tests
 
 The build creates:
 
-- `dist/Local File Renamer V1_3.app`
-- `downloads/Local_File_Renamer_v1_3_macOS_Apple_Silicon.zip`
+- `dist/Local File Renamer V1_4.app`
+- `downloads/Local_File_Renamer_v1_4_macOS_Apple_Silicon.zip`
 
 ## Notarized Public Release
 

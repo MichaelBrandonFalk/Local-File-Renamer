@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4 - 2026-10-05
+
+- Scan the selected folder before choosing where to save a CSV or spreadsheet.
+- Report file access and subfolder permission errors instead of silently omitting files.
+- Offer to include subfolders when no files are found directly in the selected folder.
+- Prevent empty scans from creating or replacing a rename plan with a header-only export.
+
 ## 1.3 - 2026-07-13
 
 - Replaced the app icon with the updated pomegranate tile artwork.

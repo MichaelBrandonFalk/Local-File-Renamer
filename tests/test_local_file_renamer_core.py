@@ -1,9 +1,14 @@
 import csv
+import errno
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from local_file_renamer_core import (
+    EmptyScanError,
+    RenameError,
     RenameRow,
     load_rename_csv,
     load_rename_plan,
@@ -77,6 +82,82 @@ class LocalFileRenamerCoreTests(unittest.TestCase):
             loaded = load_rename_plan(str(xlsx_path))
 
             self.assertEqual(loaded[0].status, "Ready")
+
+    def test_empty_scan_does_not_create_or_overwrite_exports(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "empty"
+            source.mkdir()
+            for writer, extension in (
+                (write_scan_csv, ".csv"),
+                (write_scan_plan, ".csv"),
+                (write_scan_plan, ".xlsx"),
+            ):
+                with self.subTest(writer=writer.__name__, extension=extension):
+                    output = root / f"plan{extension}"
+                    if output.exists():
+                        output.unlink()
+                    with self.assertRaises(EmptyScanError):
+                        writer(str(source), str(output))
+                    self.assertFalse(output.exists())
+                    output.write_bytes(b"Existing plan")
+                    with self.assertRaises(EmptyScanError):
+                        writer(str(source), str(output))
+                    self.assertEqual(output.read_bytes(), b"Existing plan")
+
+    def test_subfolder_only_exports_populate_both_formats(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            nested = source / "nested" / "deeper"
+            nested.mkdir(parents=True)
+            name = "Report, final 01.txt"
+            (nested / name).write_text("data", encoding="utf-8")
+            for extension in (".csv", ".xlsx"):
+                with self.subTest(extension=extension):
+                    output = root / f"plan{extension}"
+                    write_scan_plan(str(source), str(output), recursive=True)
+                    self.assertEqual(
+                        load_rename_plan(str(output)),
+                        [RenameRow(str(nested), name)],
+                    )
+
+    def test_scan_reports_unreadable_file_instead_of_skipping_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            entry = MagicMock()
+            entry.path = str(Path(tmp) / "blocked.txt")
+            entry.stat.side_effect = PermissionError(errno.EACCES, "Access denied")
+            entries = MagicMock()
+            entries.__enter__.return_value = iter([entry])
+            with patch("local_file_renamer_core.os.scandir", return_value=entries):
+                with self.assertRaisesRegex(RenameError, "Permission denied.*") as error:
+                    scan_folder(tmp)
+            self.assertIn("blocked.txt", str(error.exception))
+
+    def test_recursive_scan_reports_unreadable_subfolder(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            nested = root / "blocked"
+            nested.mkdir()
+            (root / "one.txt").write_text("data", encoding="utf-8")
+            original_scandir = os.scandir
+
+            def deny_subfolder(path):
+                if Path(path) == nested:
+                    raise PermissionError(errno.EPERM, "Access denied")
+                return original_scandir(path)
+
+            with patch("local_file_renamer_core.os.scandir", side_effect=deny_subfolder):
+                with self.assertRaisesRegex(RenameError, "Permission denied"):
+                    write_scan_plan(str(root), str(root / "plan.csv"), recursive=True)
+            self.assertFalse((root / "plan.csv").exists())
+
+    def test_recursive_scan_does_not_follow_directory_symlink_loops(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "one.txt").write_text("data", encoding="utf-8")
+            (root / "loop").symlink_to(root, target_is_directory=True)
+            self.assertEqual(scan_folder(str(root), recursive=True), [RenameRow(str(root), "one.txt")])
 
     def test_rename_rows_renames_file_and_updates_status(self):
         with tempfile.TemporaryDirectory() as tmp:

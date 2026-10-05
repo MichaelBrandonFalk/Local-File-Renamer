@@ -7,11 +7,12 @@ from tkinter import filedialog, messagebox, ttk
 from local_file_renamer_core import (
     APP_NAME,
     APP_VERSION,
+    EmptyScanError,
     RenameError,
     load_rename_plan,
     rename_rows,
+    scan_folder,
     write_rename_plan,
-    write_scan_plan,
 )
 
 
@@ -189,6 +190,28 @@ class LocalFileRenamerApp(tk.Tk):
         if not folder:
             return
 
+        try:
+            self.set_status(f"Scanning {folder}...")
+            self.update_idletasks()
+            recursive = self.recursive_var.get()
+            rows = scan_folder(folder, recursive=recursive)
+            if not rows and not recursive:
+                include_subfolders = messagebox.askyesno(
+                    APP_NAME,
+                    f"No files were found directly in:\n{folder}\n\nScan its subfolders too?",
+                )
+                if include_subfolders:
+                    recursive = True
+                    self.recursive_var.set(True)
+                    rows = scan_folder(folder, recursive=True)
+            if not rows:
+                raise EmptyScanError(folder, recursive)
+            self.set_status(f"Found {len(rows)} file(s) in {folder}.")
+        except Exception as exc:
+            self.set_status("Scan failed. No export was saved.")
+            messagebox.showerror(APP_NAME, str(exc))
+            return
+
         if extension == ".xlsx":
             default_name = "local_file_rename_plan.xlsx"
             title = "Save spreadsheet rename plan"
@@ -205,14 +228,17 @@ class LocalFileRenamerApp(tk.Tk):
             filetypes=filetypes,
         )
         if not plan_path:
+            self.set_status(f"Found {len(rows)} file(s). Export canceled.")
             return
 
         try:
-            self.rows = write_scan_plan(folder, plan_path, recursive=self.recursive_var.get())
+            write_rename_plan(plan_path, rows)
+            self.rows = rows
             self.plan_var.set(plan_path)
             self.refresh_table()
             self.set_status(f"Scanned {len(self.rows)} file(s) and wrote {Path(plan_path).name}.")
         except Exception as exc:
+            self.set_status("Export failed.")
             messagebox.showerror(APP_NAME, str(exc))
 
     def load_plan(self) -> None:
