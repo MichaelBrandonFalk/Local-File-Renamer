@@ -9,9 +9,12 @@ from local_file_renamer_core import (
     APP_VERSION,
     EmptyScanError,
     RenameError,
+    copy_rows,
+    default_copy_output_folder,
     load_rename_plan,
     rename_rows,
     scan_folder,
+    write_copy_results,
     write_rename_plan,
 )
 
@@ -44,6 +47,8 @@ class LocalFileRenamerApp(tk.Tk):
         self.plan_var = tk.StringVar()
         self.recursive_var = tk.BooleanVar(value=False)
         self.allow_overwrite_var = tk.BooleanVar(value=False)
+        self.copy_mode_var = tk.BooleanVar(value=False)
+        self.output_folder_var = tk.StringVar()
         self.status_var = tk.StringVar(value="Ready")
         self.rows = []
 
@@ -154,16 +159,55 @@ class LocalFileRenamerApp(tk.Tk):
 
         action_frame = ttk.Frame(root, style="App.TFrame")
         action_frame.grid(row=3, column=0, sticky=tk.EW, pady=(14, 0))
-        ttk.Checkbutton(action_frame, text="Allow overwrite existing files", variable=self.allow_overwrite_var).pack(
-            side=tk.LEFT
-        )
-        ttk.Button(action_frame, text="Remove Selected Rows", style="Danger.TButton", command=self.remove_selected_rows).pack(
+        action_frame.columnconfigure(0, weight=1)
+        action_buttons = ttk.Frame(action_frame, style="App.TFrame")
+        action_buttons.grid(row=0, column=0, sticky=tk.EW)
+        ttk.Checkbutton(
+            action_buttons, text="Rename copies", variable=self.copy_mode_var, command=self.update_output_controls
+        ).pack(side=tk.LEFT)
+        ttk.Checkbutton(action_buttons, text="Allow overwrite existing files", variable=self.allow_overwrite_var).pack(
             side=tk.LEFT, padx=(12, 0)
         )
-        ttk.Button(action_frame, text="Run Renames", style="Primary.TButton", command=self.run_renames).pack(side=tk.RIGHT)
+        ttk.Button(action_buttons, text="Remove Selected Rows", style="Danger.TButton", command=self.remove_selected_rows).pack(
+            side=tk.LEFT, padx=(12, 0)
+        )
+        self.run_button = ttk.Button(action_buttons, text="Run Renames", style="Primary.TButton", command=self.run_renames)
+        self.run_button.pack(side=tk.RIGHT)
+
+        self.output_controls = ttk.Frame(action_frame, style="App.TFrame")
+        self.output_controls.grid(row=1, column=0, sticky=tk.EW, pady=(12, 0))
+        self.output_controls.columnconfigure(1, weight=1)
+        ttk.Label(
+            self.output_controls, text="Output folder", style="Field.TLabel", background=PALETTE["page"]
+        ).grid(row=0, column=0, sticky=tk.W, padx=(0, 12))
+        ttk.Entry(self.output_controls, textvariable=self.output_folder_var).grid(row=0, column=1, sticky=tk.EW)
+        ttk.Button(
+            self.output_controls, text="Browse", style="Secondary.TButton", command=self.browse_output_folder
+        ).grid(row=0, column=2, padx=(12, 0))
+        self.output_controls.grid_remove()
 
         status_bar = ttk.Label(root, textvariable=self.status_var, anchor=tk.W, style="Status.TLabel")
         status_bar.grid(row=4, column=0, sticky=tk.EW, pady=(10, 0))
+        status_bar.bind("<Configure>", lambda event: status_bar.configure(wraplength=event.width))
+
+    def update_output_controls(self) -> None:
+        if self.copy_mode_var.get():
+            if not self.output_folder_var.get().strip():
+                self.output_folder_var.set(str(default_copy_output_folder()))
+            self.output_controls.grid()
+            self.run_button.configure(text="Copy & Rename")
+        else:
+            self.output_controls.grid_remove()
+            self.run_button.configure(text="Run Renames")
+
+    def browse_output_folder(self) -> None:
+        output = Path(self.output_folder_var.get().strip()).expanduser()
+        initial = output if output.is_dir() else output.parent
+        folder = filedialog.askdirectory(
+            title="Choose output folder", initialdir=str(initial), mustexist=False
+        )
+        if folder:
+            self.output_folder_var.set(folder)
 
     def _card(self, parent: ttk.Widget) -> ttk.Frame:
         card = ttk.Frame(parent, padding=16, style="Card.TFrame")
@@ -280,21 +324,41 @@ class LocalFileRenamerApp(tk.Tk):
             messagebox.showerror(APP_NAME, "No rows have a desired_name to rename to.")
             return
 
-        confirmed = messagebox.askyesno(
-            APP_NAME,
-            f"Rename {len(runnable)} file(s) on this computer now?",
-        )
+        copy_mode = self.copy_mode_var.get()
+        output_folder = ""
+        if copy_mode:
+            output_folder = self.output_folder_var.get().strip()
+            if not output_folder:
+                output_folder = str(default_copy_output_folder())
+                self.output_folder_var.set(output_folder)
+            prompt = f"Copy and rename {len(runnable)} file(s) to:\n{output_folder}\n\nOriginal files will stay in place."
+        else:
+            prompt = f"Rename {len(runnable)} file(s) on this computer now?"
+        confirmed = messagebox.askyesno(APP_NAME, prompt)
         if not confirmed:
             return
 
         try:
-            self.rows = rename_rows(self.rows, allow_overwrite=self.allow_overwrite_var.get())
-            plan_path = self.plan_var.get().strip()
-            if plan_path:
-                write_rename_plan(plan_path, self.rows)
+            if copy_mode:
+                self.set_status(f"Copying {len(runnable)} file(s)...")
+                self.update_idletasks()
+                self.rows = copy_rows(
+                    self.rows, output_folder, allow_overwrite=self.allow_overwrite_var.get()
+                )
+            else:
+                self.rows = rename_rows(self.rows, allow_overwrite=self.allow_overwrite_var.get())
             self.refresh_table()
-            renamed_count = sum(1 for row in self.rows if row.status.startswith("Renamed"))
-            self.set_status(f"Finished. Renamed {renamed_count} file(s).")
+            plan_path = self.plan_var.get().strip()
+            result_name = ""
+            if plan_path:
+                if copy_mode:
+                    result_path = write_copy_results(plan_path, output_folder, self.rows)
+                    result_name = f" Results: {result_path.name}."
+                else:
+                    write_rename_plan(plan_path, self.rows)
+            operation = "Copied" if copy_mode else "Renamed"
+            completed_count = sum(1 for row in self.rows if row.status.startswith(operation))
+            self.set_status(f"Finished. {operation} {completed_count} file(s).{result_name}")
         except RenameError as exc:
             messagebox.showerror(APP_NAME, str(exc))
         except Exception as exc:

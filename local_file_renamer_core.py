@@ -3,7 +3,9 @@ from __future__ import annotations
 import csv
 import errno
 import os
+import shutil
 import stat
+import tempfile
 import uuid
 import zipfile
 from dataclasses import dataclass
@@ -14,7 +16,7 @@ from xml.etree import ElementTree as ET
 
 
 APP_NAME = "Local File Renamer"
-APP_VERSION = "1.4"
+APP_VERSION = "1.5"
 CSV_HEADERS = ["folder_location", "current_name", "desired_name", "status"]
 PLAN_EXTENSIONS = (".csv", ".xlsx")
 XML_MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -283,6 +285,101 @@ def rename_rows(rows: Iterable[RenameRow], allow_overwrite: bool = False) -> Lis
         results.append(result)
 
     return results
+
+
+def default_copy_output_folder() -> Path:
+    name = f"Renamed Files {datetime.now():%Y-%m-%d %H-%M-%S}"
+    folder = Path.home() / "Downloads" / name
+    counter = 2
+    while folder.exists() or folder.is_symlink():
+        folder = Path.home() / "Downloads" / f"{name} ({counter})"
+        counter += 1
+    return folder
+
+
+def copy_rows(
+    rows: Iterable[RenameRow],
+    output_folder: str,
+    allow_overwrite: bool = False,
+) -> List[RenameRow]:
+    if not output_folder.strip():
+        raise RenameError("Choose an output folder for the renamed copies.")
+    rows = list(rows)
+    output = Path(output_folder).expanduser().resolve()
+    source_folders = {
+        Path(row.folder_location).expanduser().resolve()
+        for row in rows if row.folder_location.strip()
+    }
+    if output in source_folders:
+        raise RenameError("Choose an output folder different from the source folders. Originals must stay in place.")
+    if any(row.desired_name.strip() for row in rows):
+        output.mkdir(parents=True, exist_ok=True)
+
+    results: List[RenameRow] = []
+    for row in rows:
+        result = RenameRow(row.folder_location, row.current_name, row.desired_name)
+        try:
+            if not row.desired_name.strip():
+                result.status = "Skipped: desired_name is blank"
+            else:
+                source_folder = normalize_folder(row.folder_location)
+                current = validate_file_name(row.current_name, "current_name")
+                desired = validate_file_name(row.desired_name, "desired_name")
+                source = source_folder / current
+                target = output / desired
+                try:
+                    mode = source.stat().st_mode
+                except FileNotFoundError:
+                    result.status = "Not found"
+                else:
+                    if not stat.S_ISREG(mode):
+                        result.status = "Skipped: source is not a file"
+                    elif _is_same_file(source, target):
+                        result.status = "Skipped: output is the original file"
+                    else:
+                        result.status = _copy_file(source, target, allow_overwrite)
+        except Exception as exc:
+            result.status = f"Error: {exc}"
+        results.append(result)
+    return results
+
+
+def _copy_file(source: Path, target: Path, allow_overwrite: bool) -> str:
+    if allow_overwrite:
+        # Finish the copy before replacing an existing destination or its symlink.
+        with tempfile.NamedTemporaryFile(prefix=".rename_copy_", dir=target.parent, delete=False) as handle:
+            temporary = Path(handle.name)
+        try:
+            shutil.copy2(source, temporary)
+            os.replace(temporary, target)
+        finally:
+            temporary.unlink(missing_ok=True)
+    else:
+        created = False
+        try:
+            with source.open("rb") as input_handle, target.open("xb") as output_handle:
+                created = True
+                shutil.copyfileobj(input_handle, output_handle)
+            shutil.copystat(source, target)
+        except FileExistsError:
+            return "Skipped: desired_name already exists in output folder"
+        except Exception:
+            if created:
+                target.unlink(missing_ok=True)
+            raise
+    return f"Copied: {source.name} -> {target}"
+
+
+def write_copy_results(plan_path: str, output_folder: str, rows: Iterable[RenameRow]) -> Path:
+    plan = Path(plan_path)
+    output = Path(output_folder).expanduser().resolve()
+    result_path = output / f"{plan.stem}_results{plan.suffix}"
+    counter = 2
+    while result_path.exists() or result_path.is_symlink():
+        result_path = output / f"{plan.stem}_results_{counter}{plan.suffix}"
+        counter += 1
+    write_rename_plan(str(result_path), rows)
+    return result_path
 
 
 def rename_one(

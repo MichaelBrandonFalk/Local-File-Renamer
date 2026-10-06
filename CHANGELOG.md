@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5 - 2026-10-06
+
+- Added optional Rename copies mode to keep source files in place.
+- Default the copy destination to a new folder in Downloads, with an editable path and Browse control.
+- Copy files under their desired names and report destination paths and per-file results.
+- Keep the original rename plan intact in copy mode and save a separate results plan in the output folder.
+- Protect source folders and skip existing output names unless overwrite is enabled.
+
 ## 1.4 - 2026-10-05
 
 - Scan the selected folder before choosing where to save a CSV or spreadsheet.
