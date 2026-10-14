@@ -1,22 +1,28 @@
 # Local File Renamer
 
-Local File Renamer is a small macOS app for building a CSV or spreadsheet rename plan from a local folder and then applying that plan to real files on your computer.
+Local File Renamer is a desktop app for Windows, Linux Mint, and macOS. Build a CSV or spreadsheet rename plan from a local folder, then rename the files in place or save renamed copies in a separate folder.
 
 ## Download
 
-Download the latest Apple Silicon build from the public releases page:
+Download v1.6 from the public releases page:
 
-- [Local File Renamer v1.5 for macOS Apple Silicon](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.5/Local_File_Renamer_v1_5_macOS_Apple_Silicon.zip)
+- [Windows x64 executable](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.6/Local_File_Renamer_v1_6_Windows_x64.exe)
+- [Linux Mint amd64 installer](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.6/Local_File_Renamer_v1_6_Linux_Mint_amd64.deb)
+- [Linux x64 portable archive](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.6/Local_File_Renamer_v1_6_Linux_x64.tar.gz)
+- [macOS Apple Silicon ZIP](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.6/Local_File_Renamer_v1_6_macOS_Apple_Silicon.zip)
 
 ## Compatibility
 
-The macOS download is a self-contained Apple Silicon app bundle. Users do not need Python, Tkinter, Homebrew, PyInstaller, or any command-line tools installed.
+The downloads bundle Python and Tcl/Tk. Users do not need Python, pip, Homebrew, PyInstaller, or development tools installed.
 
-- Architecture: Apple Silicon / `arm64`
-- Minimum macOS target: macOS 11 Big Sur
-- Bundled runtime: Python 3.13 plus Tcl/Tk UI libraries
+| Download | Supported System | Opening the App |
+| --- | --- | --- |
+| Windows `.exe` | Windows 10/11, x64 | Open the downloaded executable. No installer or administrator access needed. |
+| Mint `.deb` | Linux Mint 21.x/22.x, amd64 | Open in Mint's package installer, install, then launch Local File Renamer from the application menu. |
+| Linux `.tar.gz` | Mint 21.x/22.x and compatible desktop Linux with glibc 2.35+, x64 | Extract the full archive and open `local-file-renamer` inside it. Keep `_internal` beside the executable. |
+| macOS `.zip` | macOS 11 Big Sur or newer, Apple Silicon | Extract the ZIP and open the `.app`. |
 
-This public build is ad-hoc signed. For the smoothest double-click launch experience after downloading from the web, the app should also be signed with an Apple Developer ID certificate and notarized by Apple.
+The Mint installer declares the standard desktop library dependencies and includes an application-menu launcher and icon. Windows and Linux ARM builds are not included. The macOS public build remains ad-hoc signed; Developer ID signing and notarization require an Apple developer certificate.
 
 ## What It Does
 
@@ -45,21 +51,34 @@ Exports populate `folder_location` and `current_name` for each file found. The `
 
 Select `Rename copies` after loading an edited plan. The output defaults to a new `Renamed Files` folder in Downloads. Edit `Output folder` or use `Browse` to choose a different destination, then click `Copy & Rename` and confirm. The folder is created when the run starts.
 
+Windows uses the system Downloads location, including redirected folders. Linux uses the configured XDG Downloads folder, including localized names. The displayed output path remains selected between runs; choose a different empty folder for a fresh set of copies.
+
 Rows with a blank `desired_name` are skipped. Copies from all source folders go directly into the selected output folder. Duplicate output names are skipped unless `Allow overwrite existing files` is enabled. An output folder cannot also be a source folder.
 
 The original files and input plan stay in place. A separate results plan is saved in the output folder, in the same CSV or XLSX format as the input. Copy results retain the source names and desired names, with the destination recorded in `status`. Existing copies and reports are not replaced unless file overwrite is explicitly enabled; reports always receive a unique name.
 
 ## Build Locally
 
+Builders require Python 3.13 or newer with Tkinter. On Windows or Linux:
+
+```bash
+python -m pip install -r requirements-build.txt
+python -m unittest discover -s tests -v
+python build_release.py
+```
+
+On Linux, build on Ubuntu 22.04 or Linux Mint 21 for the oldest supported glibc baseline. A graphical session is required for package checks; CI uses `xvfb-run -a python build_release.py`. The Linux builder also requires `dpkg-deb`.
+
+On an Apple Silicon Mac:
+
 ```bash
 python3 -m unittest discover -s tests
 ./build_mac_silicon.sh
 ```
 
-The build creates:
+Builds place versioned release packages and SHA-256 checksums in `downloads/`. Windows and Linux builds run the packaged application through CSV/XLSX export, plan loading, copying, results reporting, renaming, and window-layout checks before packaging completes.
 
-- `dist/Local File Renamer V1_5.app`
-- `downloads/Local_File_Renamer_v1_5_macOS_Apple_Silicon.zip`
+GitHub Actions builds on native Windows and Linux runners, then verifies both the portable archive and installed DEB in Linux Mint 21.3 and 22 containers. Containers verify the application and its desktop libraries with a virtual display; they do not simulate the full Cinnamon, MATE, or Xfce desktop.
 
 ## Notarized Public Release
 

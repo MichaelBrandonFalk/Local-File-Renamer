@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import csv
 import errno
+import ntpath
 import os
+import shlex
 import shutil
 import stat
+import sys
 import tempfile
 import uuid
 import zipfile
@@ -16,7 +19,7 @@ from xml.etree import ElementTree as ET
 
 
 APP_NAME = "Local File Renamer"
-APP_VERSION = "1.5"
+APP_VERSION = "1.6"
 CSV_HEADERS = ["folder_location", "current_name", "desired_name", "status"]
 PLAN_EXTENSIONS = (".csv", ".xlsx")
 XML_MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -79,11 +82,16 @@ def normalize_folder(folder_location: str) -> Path:
 
 def _scan_error(path: Path, exc: OSError) -> RenameError:
     if exc.errno in {errno.EACCES, errno.EPERM}:
+        if sys.platform == "darwin":
+            guidance = (
+                "Choose the folder with Browse and allow access if macOS asks. "
+                "If access is still blocked, check System Settings > Privacy & Security > "
+                "Files and Folders for Local File Renamer."
+            )
+        else:
+            guidance = "Choose a folder you can access, or check its read and write permissions in your file manager."
         return RenameError(
-            f"Permission denied while reading:\n{path}\n\n"
-            "Choose the folder with Browse and allow access if macOS asks. "
-            "If access is still blocked, check System Settings > Privacy & Security > "
-            "Files and Folders for Local File Renamer."
+            f"Permission denied while reading:\n{path}\n\n{guidance}"
         )
     return RenameError(f"Could not read {path}: {exc}")
 
@@ -96,8 +104,10 @@ def validate_file_name(file_name: str, field_label: str) -> str:
         raise RenameError(f"{field_label} cannot be {clean!r}.")
     if "\x00" in clean:
         raise RenameError(f"{field_label} cannot contain null characters.")
-    if "/" in clean or (os.altsep and os.altsep in clean):
+    if "/" in clean or (sys.platform == "win32" and "\\" in clean):
         raise RenameError(f"{field_label} must be a file name only, not a path.")
+    if sys.platform == "win32" and (ntpath.isreserved(clean) or any(character in clean for character in '<>:"|?*')):
+        raise RenameError(f"{field_label} is not a valid Windows file name: {clean!r}.")
     return clean
 
 
@@ -287,12 +297,48 @@ def rename_rows(rows: Iterable[RenameRow], allow_overwrite: bool = False) -> Lis
     return results
 
 
+def downloads_folder() -> Path:
+    if sys.platform == "win32":
+        import ctypes
+
+        directory = ctypes.c_wchar_p()
+        try:
+            identifier = ctypes.create_string_buffer(uuid.UUID("374de290-123f-4565-9164-39c4925e467b").bytes_le)
+            shell = ctypes.windll.shell32.SHGetKnownFolderPath
+            shell.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_void_p, ctypes.POINTER(ctypes.c_wchar_p)]
+            shell.restype = ctypes.c_long
+            if shell(ctypes.byref(identifier), 0, None, ctypes.byref(directory)) == 0 and directory.value:
+                return Path(directory.value)
+        except (OSError, AttributeError):
+            pass
+        finally:
+            if directory:
+                free = ctypes.windll.ole32.CoTaskMemFree
+                free.argtypes = [ctypes.c_void_p]
+                free(ctypes.cast(directory, ctypes.c_void_p))
+    elif sys.platform.startswith("linux"):
+        config = Path(os.environ.get("XDG_CONFIG_HOME") or str(Path.home() / ".config")) / "user-dirs.dirs"
+        try:
+            for line in config.read_text(encoding="utf-8").splitlines():
+                key, separator, value = line.partition("=")
+                if separator and key.strip() == "XDG_DOWNLOAD_DIR":
+                    values = shlex.split(value, comments=True)
+                    if len(values) == 1:
+                        value = values[0].replace("${HOME}", str(Path.home())).replace("$HOME", str(Path.home()))
+                        if Path(value).is_absolute():
+                            return Path(value)
+        except (OSError, ValueError):
+            pass
+    return Path.home() / "Downloads"
+
+
 def default_copy_output_folder() -> Path:
     name = f"Renamed Files {datetime.now():%Y-%m-%d %H-%M-%S}"
-    folder = Path.home() / "Downloads" / name
+    parent = downloads_folder()
+    folder = parent / name
     counter = 2
     while folder.exists() or folder.is_symlink():
-        folder = Path.home() / "Downloads" / f"{name} ({counter})"
+        folder = parent / f"{name} ({counter})"
         counter += 1
     return folder
 

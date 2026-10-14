@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
@@ -37,11 +38,15 @@ PALETTE = {
 
 class LocalFileRenamerApp(tk.Tk):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(className="LocalFileRenamer")
         self.title(f"{APP_NAME} v{APP_VERSION}")
         self.geometry("1120x720")
         self.minsize(1020, 620)
         self.configure(bg=PALETTE["page"])
+        icon_path = Path(__file__).parent / "assets" / "local_file_renamer_icon.png"
+        if icon_path.is_file() and sys.platform != "darwin":
+            self.app_icon = tk.PhotoImage(file=str(icon_path))
+            self.iconphoto(True, self.app_icon)
 
         self.folder_var = tk.StringVar()
         self.plan_var = tk.StringVar()
@@ -56,30 +61,31 @@ class LocalFileRenamerApp(tk.Tk):
         self._build_ui()
 
     def _configure_styles(self) -> None:
+        font_family = "Helvetica Neue" if sys.platform == "darwin" else "Segoe UI" if sys.platform == "win32" else "DejaVu Sans"
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
-        self.style.configure(".", background=PALETTE["page"], foreground=PALETTE["ink"], font=("Helvetica Neue", 12))
+        self.style.configure(".", background=PALETTE["page"], foreground=PALETTE["ink"], font=(font_family, 12))
         self.style.configure("App.TFrame", background=PALETTE["page"])
         self.style.configure("Header.TFrame", background=PALETTE["page"])
         self.style.configure("Card.TFrame", background=PALETTE["panel"], relief="solid", borderwidth=1)
         self.style.configure("Soft.TFrame", background=PALETTE["panel_soft"])
-        self.style.configure("Title.TLabel", background=PALETTE["page"], foreground=PALETTE["ink"], font=("Helvetica Neue", 28, "bold"))
-        self.style.configure("Subtitle.TLabel", background=PALETTE["page"], foreground=PALETTE["muted"], font=("Helvetica Neue", 12))
-        self.style.configure("CardTitle.TLabel", background=PALETTE["panel"], foreground=PALETTE["ink"], font=("Helvetica Neue", 14, "bold"))
-        self.style.configure("Body.TLabel", background=PALETTE["panel"], foreground=PALETTE["muted"], font=("Helvetica Neue", 11))
-        self.style.configure("Field.TLabel", background=PALETTE["panel"], foreground=PALETTE["ink"], font=("Helvetica Neue", 11, "bold"))
-        self.style.configure("Status.TLabel", background=PALETTE["page"], foreground=PALETTE["muted"], font=("Helvetica Neue", 11))
-        self.style.configure("Version.TLabel", background=PALETTE["accent_soft"], foreground=PALETTE["accent_dark"], font=("Helvetica Neue", 11, "bold"))
+        self.style.configure("Title.TLabel", background=PALETTE["page"], foreground=PALETTE["ink"], font=(font_family, 28, "bold"))
+        self.style.configure("Subtitle.TLabel", background=PALETTE["page"], foreground=PALETTE["muted"], font=(font_family, 12))
+        self.style.configure("CardTitle.TLabel", background=PALETTE["panel"], foreground=PALETTE["ink"], font=(font_family, 14, "bold"))
+        self.style.configure("Body.TLabel", background=PALETTE["panel"], foreground=PALETTE["muted"], font=(font_family, 11))
+        self.style.configure("Field.TLabel", background=PALETTE["panel"], foreground=PALETTE["ink"], font=(font_family, 11, "bold"))
+        self.style.configure("Status.TLabel", background=PALETTE["page"], foreground=PALETTE["muted"], font=(font_family, 11))
+        self.style.configure("Version.TLabel", background=PALETTE["accent_soft"], foreground=PALETTE["accent_dark"], font=(font_family, 11, "bold"))
         self.style.configure("TEntry", fieldbackground="#FFFFFF", foreground=PALETTE["ink"], bordercolor=PALETTE["line"], lightcolor=PALETTE["line"], darkcolor=PALETTE["line"], padding=8)
-        self.style.configure("TCheckbutton", background=PALETTE["panel"], foreground=PALETTE["ink"], font=("Helvetica Neue", 11))
+        self.style.configure("TCheckbutton", background=PALETTE["panel"], foreground=PALETTE["ink"], font=(font_family, 11))
         self.style.map("TCheckbutton", background=[("active", PALETTE["panel"])])
-        self.style.configure("Primary.TButton", background=PALETTE["accent"], foreground="#FFFFFF", bordercolor=PALETTE["accent"], lightcolor=PALETTE["accent"], darkcolor=PALETTE["accent"], padding=(16, 9), font=("Helvetica Neue", 11, "bold"))
+        self.style.configure("Primary.TButton", background=PALETTE["accent"], foreground="#FFFFFF", bordercolor=PALETTE["accent"], lightcolor=PALETTE["accent"], darkcolor=PALETTE["accent"], padding=(16, 9), font=(font_family, 11, "bold"))
         self.style.map("Primary.TButton", background=[("active", PALETTE["accent_dark"]), ("pressed", PALETTE["accent_dark"])], foreground=[("active", "#FFFFFF")])
-        self.style.configure("Secondary.TButton", background=PALETTE["grey_button"], foreground=PALETTE["ink"], bordercolor=PALETTE["line"], lightcolor=PALETTE["line"], darkcolor=PALETTE["line"], padding=(14, 8), font=("Helvetica Neue", 11, "bold"))
+        self.style.configure("Secondary.TButton", background=PALETTE["grey_button"], foreground=PALETTE["ink"], bordercolor=PALETTE["line"], lightcolor=PALETTE["line"], darkcolor=PALETTE["line"], padding=(14, 8), font=(font_family, 11, "bold"))
         self.style.map("Secondary.TButton", background=[("active", "#D9D2E4"), ("pressed", "#D0C7DD")])
-        self.style.configure("Danger.TButton", background="#EEE8F4", foreground=PALETTE["muted"], bordercolor=PALETTE["line"], lightcolor=PALETTE["line"], darkcolor=PALETTE["line"], padding=(14, 8), font=("Helvetica Neue", 11, "bold"))
-        self.style.configure("Treeview", background=PALETTE["tree"], fieldbackground=PALETTE["tree"], foreground=PALETTE["ink"], bordercolor=PALETTE["line"], rowheight=30, font=("Helvetica Neue", 11))
-        self.style.configure("Treeview.Heading", background=PALETTE["accent_soft"], foreground=PALETTE["ink"], relief="flat", font=("Helvetica Neue", 11, "bold"))
+        self.style.configure("Danger.TButton", background="#EEE8F4", foreground=PALETTE["muted"], bordercolor=PALETTE["line"], lightcolor=PALETTE["line"], darkcolor=PALETTE["line"], padding=(14, 8), font=(font_family, 11, "bold"))
+        self.style.configure("Treeview", background=PALETTE["tree"], fieldbackground=PALETTE["tree"], foreground=PALETTE["ink"], bordercolor=PALETTE["line"], rowheight=30, font=(font_family, 11))
+        self.style.configure("Treeview.Heading", background=PALETTE["accent_soft"], foreground=PALETTE["ink"], relief="flat", font=(font_family, 11, "bold"))
         self.style.map("Treeview.Heading", background=[("active", "#E4DAFA")])
         self.style.map("Treeview", background=[("selected", "#DCCBFF")], foreground=[("selected", PALETTE["ink"])])
         self.style.configure("Vertical.TScrollbar", background=PALETTE["grey_button"], troughcolor=PALETTE["panel_soft"], bordercolor=PALETTE["line"], arrowcolor=PALETTE["muted"])
@@ -112,7 +118,7 @@ class LocalFileRenamerApp(tk.Tk):
         folder_card.columnconfigure(1, weight=1)
         ttk.Label(folder_card, text="Folder Export", style="CardTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky=tk.W, pady=(0, 12))
         ttk.Label(folder_card, text="Folder location", style="Field.TLabel").grid(row=1, column=0, sticky=tk.W, padx=(0, 10))
-        ttk.Entry(folder_card, textvariable=self.folder_var).grid(row=1, column=1, sticky=tk.EW)
+        ttk.Entry(folder_card, textvariable=self.folder_var, width=12).grid(row=1, column=1, sticky=tk.EW)
         ttk.Button(folder_card, text="Browse", style="Secondary.TButton", command=self.browse_folder).grid(row=1, column=2, padx=(10, 0))
         ttk.Checkbutton(folder_card, text="Include subfolders", variable=self.recursive_var).grid(row=2, column=1, sticky=tk.W, pady=(14, 0))
         export_buttons = ttk.Frame(folder_card, style="Card.TFrame")
@@ -125,7 +131,7 @@ class LocalFileRenamerApp(tk.Tk):
         plan_card.columnconfigure(1, weight=1)
         ttk.Label(plan_card, text="Rename Plan", style="CardTitle.TLabel").grid(row=0, column=0, columnspan=3, sticky=tk.W, pady=(0, 12))
         ttk.Label(plan_card, text="Plan location", style="Field.TLabel").grid(row=1, column=0, sticky=tk.W, padx=(0, 10))
-        ttk.Entry(plan_card, textvariable=self.plan_var).grid(row=1, column=1, sticky=tk.EW)
+        ttk.Entry(plan_card, textvariable=self.plan_var, width=12).grid(row=1, column=1, sticky=tk.EW)
         ttk.Button(plan_card, text="Browse Plan", style="Secondary.TButton", command=self.browse_plan).grid(row=1, column=2, padx=(10, 0))
         ttk.Label(plan_card, text="CSV and .xlsx files use the same four columns.", style="Body.TLabel").grid(
             row=2, column=1, sticky=tk.W, pady=(12, 0)
@@ -383,4 +389,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 3 and sys.argv[1] == "--self-test":
+        from runtime_check import run_checks
+
+        run_checks(Path(sys.argv[2]))
+    else:
+        main()

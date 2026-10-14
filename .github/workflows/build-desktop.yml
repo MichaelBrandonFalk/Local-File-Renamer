@@ -1,0 +1,112 @@
+name: Build Windows and Linux
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "*.py"
+      - "VERSION"
+      - "requirements-build.txt"
+      - "assets/**"
+      - "tests/**"
+      - ".github/workflows/build-desktop.yml"
+  pull_request:
+    paths:
+      - "*.py"
+      - "VERSION"
+      - "requirements-build.txt"
+      - "assets/**"
+      - "tests/**"
+      - ".github/workflows/build-desktop.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and test ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Windows
+            runner: windows-2022
+          - platform: Linux
+            runner: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          architecture: x64
+          cache: pip
+          cache-dependency-path: requirements-build.txt
+      - name: Install Linux display libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xauth libx11-6 libxext6 libxrender1 libxft2 libfontconfig1 fonts-dejavu-core
+      - run: python -m pip install -r requirements-build.txt
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Build and verify Windows executable
+        if: runner.os == 'Windows'
+        run: python build_release.py
+      - name: Build and verify Linux packages
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python build_release.py
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.platform }}
+          path: downloads/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload runtime checks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checks-${{ matrix.platform }}
+          path: build/package-check-*.json
+          if-no-files-found: ignore
+
+  mint:
+    name: Verify Linux Mint ${{ matrix.version }}
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: "21.3"
+            image: linuxmintd/mint21.3-amd64:latest
+          - version: "22"
+            image: linuxmintd/mint22-amd64:latest
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - name: Install virtual display and system desktop libraries
+        run: |
+          apt-get update
+          apt-get install -y xvfb xauth libx11-6 libxext6 libxrender1 libxft2 libfontconfig1 fonts-dejavu-core
+      - uses: actions/download-artifact@v4
+        with:
+          name: desktop-Linux
+          path: packages
+      - name: Verify the portable bundle
+        shell: bash
+        run: |
+          mkdir -p /tmp/renamer-portable
+          tar -xzf packages/*Linux_x64.tar.gz -C /tmp/renamer-portable
+          xvfb-run -a /tmp/renamer-portable/*/local-file-renamer --self-test /tmp/mint-portable-check.json
+          cat /tmp/mint-portable-check.json
+      - name: Install and verify the Mint package
+        shell: bash
+        run: |
+          apt-get install -y ./packages/*Linux_Mint_amd64.deb
+          xvfb-run -a /opt/local-file-renamer/local-file-renamer --self-test /tmp/mint-installed-check.json
+          cat /tmp/mint-installed-check.json

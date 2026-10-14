@@ -12,6 +12,7 @@ from local_file_renamer_core import (
     RenameRow,
     copy_rows,
     default_copy_output_folder,
+    downloads_folder,
     load_rename_csv,
     load_rename_plan,
     rename_rows,
@@ -20,6 +21,7 @@ from local_file_renamer_core import (
     write_scan_plan,
     write_copy_results,
     write_rename_plan,
+    validate_file_name,
 )
 
 
@@ -340,7 +342,7 @@ class LocalFileRenamerCoreTests(unittest.TestCase):
     def test_default_copy_folder_is_new_and_inside_downloads(self):
         with tempfile.TemporaryDirectory() as tmp:
             home = Path(tmp)
-            with patch("local_file_renamer_core.Path.home", return_value=home):
+            with patch("local_file_renamer_core.downloads_folder", return_value=home / "Downloads"):
                 folder = default_copy_output_folder()
                 self.assertEqual(folder.parent, home / "Downloads")
                 self.assertFalse(folder.exists())
@@ -367,6 +369,45 @@ class LocalFileRenamerCoreTests(unittest.TestCase):
                     self.assertEqual(occupied.read_bytes(), b"Do not overwrite this copy")
                     self.assertEqual(plan.read_bytes(), original_plan)
                     self.assertEqual(load_rename_plan(str(result_path)), rows)
+
+    def test_windows_names_cannot_escape_folder_or_use_devices(self):
+        with patch("local_file_renamer_core.sys.platform", "win32"):
+            for name in ("nested\\file.txt", "C:other.txt", "CON", "con.txt", "NUL.csv", "LPT1.txt", "file.", 'bad"name', "file:stream", "bad?.txt", "bad\x01.txt"):
+                with self.subTest(name=name):
+                    with self.assertRaises(RenameError):
+                        validate_file_name(name, "desired_name")
+            self.assertEqual(validate_file_name("Report 2026.txt", "desired_name"), "Report 2026.txt")
+
+    def test_linux_downloads_uses_configured_directory_without_running_shell(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = root / "config"
+            config.mkdir()
+            (config / "user-dirs.dirs").write_text('XDG_DOWNLOAD_DIR="$HOME/Local Downloads"\n', encoding="utf-8")
+            with patch("local_file_renamer_core.sys.platform", "linux"), patch(
+                "local_file_renamer_core.Path.home", return_value=root
+            ), patch.dict(os.environ, {"XDG_CONFIG_HOME": str(config)}):
+                self.assertEqual(downloads_folder(), root / "Local Downloads")
+                (config / "user-dirs.dirs").write_text('XDG_DOWNLOAD_DIR="$(touch SHOULD_NOT_RUN)"\n', encoding="utf-8")
+                self.assertEqual(downloads_folder(), root / "Downloads")
+
+    def test_windows_downloads_uses_known_folder_and_frees_result(self):
+        import ctypes
+
+        with tempfile.TemporaryDirectory() as tmp:
+            expected = Path(tmp) / "Redirected Downloads"
+            windows = MagicMock()
+
+            def lookup(identifier, flags, token, directory):
+                directory._obj.value = str(expected)
+                return 0
+
+            windows.shell32.SHGetKnownFolderPath.side_effect = lookup
+            with patch("local_file_renamer_core.sys.platform", "win32"), patch.object(
+                ctypes, "windll", windows, create=True
+            ):
+                self.assertEqual(downloads_folder(), expected)
+            windows.ole32.CoTaskMemFree.assert_called_once()
 
 
 if __name__ == "__main__":

@@ -6,3 +6,7 @@ build/
 dist/
 *.spec
 downloads/*.zip
+downloads/*.exe
+downloads/*.deb
+downloads/*.tar.gz
+downloads/SHA256SUMS*.txt
