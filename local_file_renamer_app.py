@@ -392,6 +392,9 @@ if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--self-test":
         from runtime_check import run_checks
 
-        run_checks(Path(sys.argv[2]))
+        try:
+            run_checks(Path(sys.argv[2]))
+        except Exception:
+            sys.exit(1)
     else:
         main()

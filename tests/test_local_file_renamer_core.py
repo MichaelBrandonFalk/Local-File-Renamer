@@ -212,7 +212,7 @@ class LocalFileRenamerCoreTests(unittest.TestCase):
             self.assertEqual(results[0].current_name, "old.txt")
             self.assertEqual(results[0].desired_name, "new.txt")
             self.assertTrue(results[0].status.startswith("Copied:"))
-            self.assertIn(str(output / "new.txt"), results[0].status)
+            self.assertIn(str(output.resolve() / "new.txt"), results[0].status)
             self.assertEqual(row.status, "")
 
     def test_copy_accepts_unchanged_name_in_different_folder(self):

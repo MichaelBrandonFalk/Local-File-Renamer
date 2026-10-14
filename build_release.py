@@ -23,11 +23,12 @@ def run(*arguments: str) -> None:
 def verify(executable: Path, system: str) -> None:
     report = ROOT / "build" / f"package-check-{system}.json"
     report.unlink(missing_ok=True)
-    run(str(executable), "--self-test", str(report))
+    process = subprocess.run([str(executable), "--self-test", str(report)], cwd=ROOT, timeout=90)
     result = json.loads(report.read_text(encoding="utf-8"))
+    print(json.dumps(result, indent=2))
+    process.check_returncode()
     if not result.get("success") or result.get("version") != VERSION:
         raise RuntimeError(f"Packaged app verification failed: {result}")
-    print(json.dumps(result, indent=2))
 
 
 def package_linux(bundle: Path) -> list[Path]:

@@ -50,6 +50,8 @@ def run_checks(report_path: Path) -> None:
             for suffix in (".csv", ".xlsx"):
                 plan = root / f"plan{suffix}"
                 with patch("local_file_renamer_app.filedialog.asksaveasfilename", return_value=str(plan)), patch(
+                    "local_file_renamer_app.messagebox.askyesno", return_value=False
+                ), patch(
                     "local_file_renamer_app.messagebox.showerror"
                 ) as error:
                     app.export_scan(suffix)
@@ -57,7 +59,9 @@ def run_checks(report_path: Path) -> None:
                 assert load_rename_plan(str(plan)) == [RenameRow(str(source), "original.txt")]
                 write_rename_plan(str(plan), [RenameRow(str(source), "original.txt", "renamed.txt")])
                 app.plan_var.set(str(plan))
-                app.load_plan()
+                with patch("local_file_renamer_app.messagebox.showerror") as error:
+                    app.load_plan()
+                assert not error.called, error.call_args
                 output = root / f"copies-{suffix[1:]}"
                 app.output_folder_var.set(str(output))
                 app.copy_mode_var.set(True)
