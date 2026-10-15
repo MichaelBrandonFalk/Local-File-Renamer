@@ -34,6 +34,7 @@ cd "$PROJECT_DIR"
 mkdir -p "$PROJECT_DIR/downloads"
 find "$PROJECT_DIR/dist/$APP_NAME.app" -name '._*' -type f -delete
 COPYFILE_DISABLE=1 ditto -c -k --norsrc --noextattr --keepParent "$PROJECT_DIR/dist/$APP_NAME.app" "$PROJECT_DIR/downloads/$ZIP_NAME"
+(cd "$PROJECT_DIR/downloads" && shasum -a 256 "$ZIP_NAME" > SHA256SUMS-macOS.txt)
 
 echo "Build complete: $PROJECT_DIR/dist/$APP_NAME.app"
 echo "Package complete: $PROJECT_DIR/downloads/$ZIP_NAME"

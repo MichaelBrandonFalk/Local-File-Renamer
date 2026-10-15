@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.6 - 2026-10-14
+## 1.6 - 2026-10-15
 
 - Added a self-contained Windows x64 executable and Linux Mint x64 DEB and portable archive.
 - Added native Windows and Linux builds with packaged-app runtime checks and Linux Mint compatibility checks.
@@ -8,6 +8,7 @@
 - Respect redirected Windows Downloads folders and localized Linux XDG Downloads folders.
 - Reject reserved and invalid Windows file names before copying or renaming.
 - Preserved the macOS Apple Silicon app and existing CSV, XLSX, and renamed-copy workflows.
+
 ## 1.5 - 2026-10-06
 
 - Added optional Rename copies mode to keep source files in place.
