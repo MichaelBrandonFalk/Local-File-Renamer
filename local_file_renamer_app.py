@@ -18,6 +18,8 @@ from local_file_renamer_core import (
     write_copy_results,
     write_rename_plan,
 )
+from neb_artwork import copy_artwork_plan, fetch_current_profile
+from neb_artwork_ui import NEBArtworkDialog, background
 
 
 PALETTE = {
@@ -56,6 +58,7 @@ class LocalFileRenamerApp(tk.Tk):
         self.output_folder_var = tk.StringVar()
         self.status_var = tk.StringVar(value="Ready")
         self.rows = []
+        self.neb_plan = None
 
         self._configure_styles()
         self._build_ui()
@@ -101,12 +104,15 @@ class LocalFileRenamerApp(tk.Tk):
         header.grid(row=0, column=0, sticky=tk.EW)
         header.columnconfigure(0, weight=1)
         ttk.Label(header, text="Local File Renamer", style="Title.TLabel").grid(row=0, column=0, sticky=tk.W)
-        ttk.Label(header, text=f"v{APP_VERSION}", style="Version.TLabel", padding=(12, 5)).grid(row=0, column=1, sticky=tk.E)
+        ttk.Button(header, text="NEB Artwork", style="Primary.TButton", command=self.open_neb_artwork).grid(row=0, column=1, padx=(12, 8))
+        self.neb_match_button = ttk.Button(header, text="Use Selected Match", style="Secondary.TButton", command=self.choose_neb_match, state=tk.DISABLED)
+        self.neb_match_button.grid(row=0, column=2, padx=(0, 8))
+        ttk.Label(header, text=f"v{APP_VERSION}", style="Version.TLabel", padding=(12, 5)).grid(row=0, column=3, sticky=tk.E)
         ttk.Label(
             header,
             text="Scan folders, export a rename plan, load the edited CSV or spreadsheet, then run the rename.",
             style="Subtitle.TLabel",
-        ).grid(row=1, column=0, columnspan=2, sticky=tk.W, pady=(2, 0))
+        ).grid(row=1, column=0, columnspan=4, sticky=tk.W, pady=(2, 0))
 
         controls = ttk.Frame(root, style="App.TFrame")
         controls.grid(row=1, column=0, sticky=tk.EW, pady=(18, 14))
@@ -197,6 +203,8 @@ class LocalFileRenamerApp(tk.Tk):
         status_bar.bind("<Configure>", lambda event: status_bar.configure(wraplength=event.width))
 
     def update_output_controls(self) -> None:
+        if getattr(self, "neb_plan", None) is not None:
+            self.copy_mode_var.set(True)
         if self.copy_mode_var.get():
             if not self.output_folder_var.get().strip():
                 self.output_folder_var.set(str(default_copy_output_folder()))
@@ -223,6 +231,39 @@ class LocalFileRenamerApp(tk.Tk):
         folder = filedialog.askdirectory(title="Choose folder")
         if folder:
             self.folder_var.set(folder)
+
+    def open_neb_artwork(self) -> None:
+        dialog = getattr(self, "neb_dialog", None)
+        if dialog is not None and dialog.winfo_exists():
+            dialog.lift()
+            return
+        self.neb_dialog = NEBArtworkDialog(self)
+
+    def accept_neb_plan(self, plan, output_folder) -> None:
+        self.neb_plan = plan
+        self.rows = plan.rows
+        self.folder_var.set(plan.source_folder)
+        self.plan_var.set("")
+        self.output_folder_var.set(output_folder)
+        self.copy_mode_var.set(True)
+        self.update_output_controls()
+        self.neb_match_button.configure(state=tk.NORMAL)
+        self.refresh_table()
+        self.set_status(f"NEB Standard {plan.profile.revision[:10]}: {plan.summary()}.")
+
+    def choose_neb_match(self) -> None:
+        if self.neb_plan is None:
+            return
+        selected = self.tree.selection()
+        if len(selected) != 1:
+            messagebox.showerror(APP_NAME, "One source file must be selected.")
+            return
+        index = self.tree.get_children().index(selected[0])
+        if not self.neb_plan.choose_match(self.rows[index]):
+            messagebox.showerror(APP_NAME, "The selected row has no conflicting source matches.")
+            return
+        self.refresh_table()
+        self.set_status(self.neb_plan.summary())
 
     def browse_plan(self) -> None:
         plan_path = filedialog.askopenfilename(
@@ -283,6 +324,9 @@ class LocalFileRenamerApp(tk.Tk):
 
         try:
             write_rename_plan(plan_path, rows)
+            self.neb_plan = None
+            if hasattr(self, "neb_match_button"):
+                self.neb_match_button.configure(state=tk.DISABLED)
             self.rows = rows
             self.plan_var.set(plan_path)
             self.refresh_table()
@@ -301,6 +345,9 @@ class LocalFileRenamerApp(tk.Tk):
 
         try:
             self.rows = load_rename_plan(plan_path)
+            self.neb_plan = None
+            if hasattr(self, "neb_match_button"):
+                self.neb_match_button.configure(state=tk.DISABLED)
             self.refresh_table()
             self.set_status(f"Loaded {len(self.rows)} row(s) from {Path(plan_path).name}.")
         except Exception as exc:
@@ -321,6 +368,30 @@ class LocalFileRenamerApp(tk.Tk):
         self.set_status(f"Removed {len(selected)} row(s).")
 
     def run_renames(self) -> None:
+        plan = getattr(self, "neb_plan", None)
+        if plan is None:
+            LocalFileRenamerApp._execute_renames(self)
+            return
+        self.run_button.configure(state=tk.DISABLED)
+        self.set_status("Verifying the current NEB defaults before copying...")
+
+        def failed(error):
+            self.run_button.configure(state=tk.NORMAL)
+            self.set_status("NEB verification failed. No files copied.")
+            messagebox.showerror(APP_NAME, str(error))
+
+        def verified(profile):
+            self.run_button.configure(state=tk.NORMAL)
+            if self.neb_plan is not plan:
+                return
+            if profile.fingerprint != plan.profile.fingerprint:
+                failed("NEB's default naming rules or art requirements changed after this preview. Build a new NEB preview before copying.")
+                return
+            LocalFileRenamerApp._execute_renames(self)
+
+        background(self, fetch_current_profile, verified, failed)
+
+    def _execute_renames(self) -> None:
         if not self.rows:
             messagebox.showerror(APP_NAME, "Load a CSV or spreadsheet rename plan first.")
             return
@@ -338,6 +409,8 @@ class LocalFileRenamerApp(tk.Tk):
                 output_folder = str(default_copy_output_folder())
                 self.output_folder_var.set(output_folder)
             prompt = f"Copy and rename {len(runnable)} file(s) to:\n{output_folder}\n\nOriginal files will stay in place."
+            if getattr(self, "neb_plan", None) is not None:
+                prompt += f"\n\nNEB artwork: {self.neb_plan.summary()}."
         else:
             prompt = f"Rename {len(runnable)} file(s) on this computer now?"
         confirmed = messagebox.askyesno(APP_NAME, prompt)
@@ -348,15 +421,19 @@ class LocalFileRenamerApp(tk.Tk):
             if copy_mode:
                 self.set_status(f"Copying {len(runnable)} file(s)...")
                 self.update_idletasks()
-                self.rows = copy_rows(
-                    self.rows, output_folder, allow_overwrite=self.allow_overwrite_var.get()
-                )
+                if getattr(self, "neb_plan", None) is not None:
+                    self.rows = copy_artwork_plan(self.neb_plan, self.rows, output_folder, self.allow_overwrite_var.get())
+                else:
+                    self.rows = copy_rows(self.rows, output_folder, allow_overwrite=self.allow_overwrite_var.get())
             else:
                 self.rows = rename_rows(self.rows, allow_overwrite=self.allow_overwrite_var.get())
             self.refresh_table()
             plan_path = self.plan_var.get().strip()
             result_name = ""
-            if plan_path:
+            if getattr(self, "neb_plan", None) is not None:
+                result_path = write_copy_results("neb_artwork.csv", output_folder, self.rows)
+                result_name = f" Results: {result_path.name}."
+            elif plan_path:
                 if copy_mode:
                     result_path = write_copy_results(plan_path, output_folder, self.rows)
                     result_name = f" Results: {result_path.name}."

@@ -89,6 +89,7 @@ def main() -> None:
         sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean",
         "--name", "local-file-renamer", "--hidden-import", "tkinter",
         "--add-data", f"{ROOT / 'assets' / 'local_file_renamer_icon.png'}:assets",
+        "--add-data", f"{ROOT / 'assets' / 'neb-default-profile.json'}:assets",
     ]
     if system == "Windows":
         arguments.extend(["--onefile", "--windowed", "--icon", str(ROOT / "assets" / "local_file_renamer_icon.png")])

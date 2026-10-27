@@ -1,0 +1,4200 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "NameEverythingBetter",
+    "url": "https://michaelbrandonfalk.github.io/NameEverythingBetter/",
+    "revision": "d5a3aaa4838e1b0c27983bbfb0ef84596dff8d87"
+  },
+  "generatedAt": "2026-10-27T21:52:09.533Z",
+  "normalization": {
+    "titleCharacterSet": "ascii"
+  },
+  "profile": {
+    "version": 1,
+    "id": "neb-standard",
+    "name": "NEB Standard",
+    "rules": {
+      "titleCase": "lower",
+      "separator": "_",
+      "stripAccents": true,
+      "apostrophes": "remove",
+      "plus": "context",
+      "ampersand": "and",
+      "at": "at",
+      "englishMedia": "eng",
+      "spanishMedia": "es",
+      "englishArt": "eng",
+      "spanishArt": "las",
+      "spanishMarker": "las",
+      "englishCaption": "cc",
+      "spanishCaption": "cc",
+      "spanishPrefixes": [
+        "LAS"
+      ],
+      "houseDigits": 7
+    },
+    "types": [
+      {
+        "domain": "neb",
+        "name": "Movie",
+        "baseTask": "Movie",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_feature_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_feature_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_feature_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_feature_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_feature_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_feature_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PUR",
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Dub Audio",
+        "baseTask": "Dub Audio",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_feature_{resolution}_{house}_dub_{spanish_marker}.wav",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PUR",
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Episode",
+        "baseTask": "Episode",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_{season}_{episode}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_{season}_{episode}_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_{season}_{episode}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_{season}_{episode}_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PUR",
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Vertical Episodes",
+        "baseTask": "Vertical Episodes",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_{resolution}_{house}_20_{language}.mov",
+            "eng": "{title}_{season}_{episode}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_{season}_{episode}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}",
+            "verticalFilename": "{title}_{season}_{episode}_vert_{resolution}_{house}_20_{language}.mov",
+            "verticalEng": "{title}_{season}_{episode}_vert_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "verticalLas": "{title}_{season}_{episode}_vert_{resolution}_{house}_{caption_type}_{language}.vtt"
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_{resolution}_{house}_20_{language}.mov",
+            "eng": "{title}_{season}_{episode}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_{season}_{episode}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}",
+            "verticalFilename": "{title}_{season}_{episode}_vert_{resolution}_{house}_20_{language}.mov",
+            "verticalEng": "{title}_{season}_{episode}_vert_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "verticalLas": "{title}_{season}_{episode}_vert_{resolution}_{house}_{caption_type}_{language}.vtt"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PUR",
+          "PFP"
+        ],
+        "defaultLanguage": "Spanish"
+      },
+      {
+        "domain": "neb",
+        "name": "Original Premium Series (Yearly)",
+        "baseTask": "Original Premium Series (Yearly)",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "year",
+            "label": "Year",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_s{year}_{episode}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_s{year}_{episode}_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Exclusive Conversation (Yearly)",
+        "baseTask": "Exclusive Conversation (Yearly)",
+        "fields": [
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "year",
+            "label": "Year",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "interviewees",
+            "label": "Interviewee(s)",
+            "type": "text"
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "exclusive_conversations_s{year}_{episode}_{interviewees}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "exclusive_conversations_s{year}_{episode}_{interviewees}_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Virtual Screening",
+        "baseTask": "Virtual Screening",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_virtual_screening_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_virtual_screening_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Virtual Screening Episode",
+        "baseTask": "Virtual Screening Episode",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_{season}_{episode}_virtual_screening_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_virtual_screening_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_{season}_{episode}_virtual_screening_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_{season}_{episode}_virtual_screening_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "PFP"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Trailer",
+        "baseTask": "Trailer",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_trailer_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_trailer_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_trailer_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_trailer_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "{title}_trailer_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "las": "{title}_trailer_{spanish_marker}_{resolution}_{house}_{caption_type}_{language}.vtt",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "TRL"
+        ]
+      },
+      {
+        "domain": "neb",
+        "name": "Extras",
+        "baseTask": "Extras",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "extra_usage",
+            "label": "Extra Type",
+            "type": "select",
+            "options": [
+              "Behind the Scenes / Making Of",
+              "Interviews (Cast/Crew)",
+              "Deleted Scenes",
+              "Bloopers / Alternate Takes",
+              "Music Videos",
+              "Promotional Clips"
+            ]
+          },
+          {
+            "key": "resolution",
+            "label": "Resolution",
+            "type": "select",
+            "options": [
+              "hd",
+              "sd",
+              "4k"
+            ]
+          },
+          {
+            "key": "house",
+            "label": "House Number",
+            "type": "text"
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{extra}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          },
+          "Spanish": {
+            "filename": "{title}_{extra}_{spanish_marker}_{resolution}_{house}_{language}.mov",
+            "eng": "",
+            "las": "",
+            "reference": "{external_reference}"
+          }
+        },
+        "variants": [],
+        "sizes": [],
+        "englishPrefixes": [
+          "EXT"
+        ]
+      },
+      {
+        "domain": "art",
+        "name": "Movie",
+        "baseTask": "Movie",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "syndication"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "2560x1920"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "1920x2560"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "1600x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Series",
+        "baseTask": "Series",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "syndication"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "2560x1920"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "1920x2560"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "1600x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Season Placeholder",
+        "baseTask": "Season Placeholder",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400",
+            "tags": [
+              "Axinom",
+              "syndication"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "syndication"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000",
+            "tags": [
+              "syndication"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "2560x1920"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "1920x2560"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "1600x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Episode",
+        "baseTask": "Episode",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "syndication"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080",
+            "tags": [
+              "syndication",
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Original Premium Series (Yearly)",
+        "baseTask": "Original Premium Series (Yearly)",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "year",
+            "label": "Year",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_s{year}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_s{year}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080",
+            "tags": []
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Exclusive Conversation (Yearly)",
+        "baseTask": "Exclusive Conversation (Yearly)",
+        "fields": [
+          {
+            "key": "year",
+            "label": "Year",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "interviewees",
+            "label": "Interviewee(s)",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "exclusive_conversations_s{year}_{episode}_{interviewees}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "exclusive_conversations_s{year}_{episode}_{interviewees}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080",
+            "tags": []
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Virtual Screening",
+        "baseTask": "Virtual Screening",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_virtual_screening_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_virtual_screening_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080",
+            "tags": []
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Virtual Screening Episode",
+        "baseTask": "Virtual Screening Episode",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_virtual_screening_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_virtual_screening_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080",
+            "tags": []
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Trailer",
+        "baseTask": "Trailer",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_trailer_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_trailer_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": []
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080",
+            "tags": []
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Extras",
+        "baseTask": "Extras",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "extra_usage",
+            "label": "Extra Type",
+            "type": "select",
+            "options": [
+              "Behind the Scenes / Making Of",
+              "Interviews (Cast/Crew)",
+              "Deleted Scenes",
+              "Bloopers / Alternate Takes",
+              "Music Videos",
+              "Promotional Clips"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{extra}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{extra}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Carousel",
+        "baseTask": "Carousel",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_carousel_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_carousel_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": []
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": []
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400",
+            "tags": []
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200",
+            "tags": []
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": []
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000",
+            "tags": []
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "2560x1920"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "1920x2560"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "1600x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Podcast Episodes",
+        "baseTask": "Podcast Episodes",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080",
+            "tags": [
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Familia Mini-Novelas Series",
+        "baseTask": "Familia Mini-Novelas Series",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Title",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "9x16",
+            "dimensions": "2160x3840",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "9x16",
+            "dimensions": "2160x3840",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000",
+            "tags": [
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "ca",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "3200x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "4x3",
+            "dimensions": "2560x1920"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "2400x3200"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "3x4",
+            "dimensions": "1920x2560"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "2x3",
+            "dimensions": "1600x2400"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "1x1",
+            "dimensions": "3000x3000"
+          },
+          {
+            "artTag": "ca",
+            "aspectRatio": "9x16",
+            "dimensions": "2160x3840"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "9x16",
+            "dimensions": "2160x3840"
+          },
+          {
+            "artTag": "tt",
+            "aspectRatio": "9x5",
+            "dimensions": "1800x1000"
+          }
+        ],
+        "englishPrefixes": []
+      },
+      {
+        "domain": "art",
+        "name": "Familia Mini-Novelas Episodes",
+        "baseTask": "Familia Mini-Novelas Episodes",
+        "fields": [
+          {
+            "key": "title",
+            "label": "Series Title",
+            "type": "text"
+          },
+          {
+            "key": "season",
+            "label": "Season",
+            "type": "text"
+          },
+          {
+            "key": "episode",
+            "label": "Episode",
+            "type": "text"
+          },
+          {
+            "key": "language",
+            "label": "Language",
+            "type": "select",
+            "options": [
+              "English",
+              "Spanish"
+            ]
+          },
+          {
+            "key": "art_tag",
+            "label": "Art Tag",
+            "type": "select",
+            "options": [
+              "ca",
+              "bg",
+              "tt"
+            ]
+          },
+          {
+            "key": "aspect_ratio",
+            "label": "Aspect Ratio",
+            "type": "select",
+            "options": [
+              "16x9"
+            ]
+          },
+          {
+            "key": "dimensions",
+            "label": "Dimensions",
+            "type": "select",
+            "options": [
+              "3840x2160"
+            ]
+          }
+        ],
+        "templates": {
+          "English": {
+            "filename": "{title}_{season}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          },
+          "Spanish": {
+            "filename": "{title}_{season}_{episode}_{language}_{art_tag}_{aspect_ratio}_{dimensions}.{extension}",
+            "eng": "",
+            "las": "",
+            "reference": ""
+          }
+        },
+        "variants": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "9x16",
+            "dimensions": "1080x1920",
+            "tags": [
+              "Axinom"
+            ]
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080",
+            "tags": [
+              "Axinom"
+            ]
+          }
+        ],
+        "sizes": [
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "3840x2160"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "2560x1440"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "16x9",
+            "dimensions": "1920x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "2x3",
+            "dimensions": "2000x3000"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "7x3",
+            "dimensions": "2450x1100"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "4x3",
+            "dimensions": "1440x1080"
+          },
+          {
+            "artTag": "bg",
+            "aspectRatio": "9x16",
+            "dimensions": "1080x1920"
+          }
+        ],
+        "englishPrefixes": []
+      }
+    ]
+  },
+  "artExtensions": {
+    "ca": "jpg",
+    "bg": "jpg",
+    "tt": "png"
+  },
+  "extraUsageCodes": {
+    "Behind the Scenes / Making Of": "bts",
+    "Interviews (Cast/Crew)": "int",
+    "Deleted Scenes": "del",
+    "Bloopers / Alternate Takes": "alt",
+    "Music Videos": "mus",
+    "Promotional Clips": "clp"
+  },
+  "titleExamples": [
+    {
+      "input": "When Hope Calls",
+      "output": "when_hope_calls"
+    },
+    {
+      "input": "The Christmas Yes List",
+      "output": "the_christmas_yes_list"
+    },
+    {
+      "input": "TITLE",
+      "output": "title"
+    },
+    {
+      "input": "Veggie Tales",
+      "output": "veggie_tales"
+    },
+    {
+      "input": "Hope & Joy",
+      "output": "hope_and_joy"
+    },
+    {
+      "input": "You + Me",
+      "output": "you_and_me"
+    },
+    {
+      "input": "A+B",
+      "output": "a_plus_b"
+    },
+    {
+      "input": "Don't Stop",
+      "output": "dont_stop"
+    },
+    {
+      "input": "God’s Love",
+      "output": "gods_love"
+    },
+    {
+      "input": "Café @ Home",
+      "output": "cafe_at_home"
+    },
+    {
+      "input": "Word...Word",
+      "output": "word_word"
+    },
+    {
+      "input": "A.B!",
+      "output": "ab"
+    },
+    {
+      "input": "A B",
+      "output": "ab"
+    },
+    {
+      "input": "Fußball",
+      "output": "fu_ball"
+    },
+    {
+      "input": "日本語 Hope",
+      "output": "hope"
+    }
+  ],
+  "artExamples": [
+    {
+      "type": "Movie",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_eng_ca_1x1_3000x3000.jpg",
+        "profile_example_title_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Movie",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_eng_ca_1x1_3000x3000.jpg",
+        "profile_example_title_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Movie",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_las_ca_1x1_3000x3000.jpg",
+        "profile_example_title_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Movie",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_las_ca_1x1_3000x3000.jpg",
+        "profile_example_title_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_eng_ca_1x1_3000x3000.jpg",
+        "profile_example_title_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_eng_ca_1x1_3000x3000.jpg",
+        "profile_example_title_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_las_ca_1x1_3000x3000.jpg",
+        "profile_example_title_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_las_ca_1x1_3000x3000.jpg",
+        "profile_example_title_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Season Placeholder",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_s01_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_s01_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_s01_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Season Placeholder",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_s03_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_s03_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_s03_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Season Placeholder",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_s01_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_s01_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_s01_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Season Placeholder",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_s03_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_s03_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_s03_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_eng_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_eng_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_las_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_las_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Original Premium Series (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s2026_e02_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s2026_e02_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s2026_e02_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s2026_e02_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Original Premium Series (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s2026_e07_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s2026_e07_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s2026_e07_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s2026_e07_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Original Premium Series (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s2026_e02_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s2026_e02_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s2026_e02_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s2026_e02_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Original Premium Series (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s2026_e07_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s2026_e07_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s2026_e07_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s2026_e07_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Exclusive Conversation (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "exclusive_conversations_s2026_e02_profile_guest_eng_bg_16x9_3840x2160.jpg",
+        "exclusive_conversations_s2026_e02_profile_guest_eng_bg_2x3_2000x3000.jpg",
+        "exclusive_conversations_s2026_e02_profile_guest_eng_bg_7x3_2450x1100.jpg",
+        "exclusive_conversations_s2026_e02_profile_guest_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Exclusive Conversation (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "exclusive_conversations_s2026_e07_profile_guest_eng_bg_16x9_3840x2160.jpg",
+        "exclusive_conversations_s2026_e07_profile_guest_eng_bg_2x3_2000x3000.jpg",
+        "exclusive_conversations_s2026_e07_profile_guest_eng_bg_7x3_2450x1100.jpg",
+        "exclusive_conversations_s2026_e07_profile_guest_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Exclusive Conversation (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "exclusive_conversations_s2026_e02_profile_guest_las_bg_16x9_3840x2160.jpg",
+        "exclusive_conversations_s2026_e02_profile_guest_las_bg_2x3_2000x3000.jpg",
+        "exclusive_conversations_s2026_e02_profile_guest_las_bg_7x3_2450x1100.jpg",
+        "exclusive_conversations_s2026_e02_profile_guest_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Exclusive Conversation (Yearly)",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "exclusive_conversations_s2026_e07_profile_guest_las_bg_16x9_3840x2160.jpg",
+        "exclusive_conversations_s2026_e07_profile_guest_las_bg_2x3_2000x3000.jpg",
+        "exclusive_conversations_s2026_e07_profile_guest_las_bg_7x3_2450x1100.jpg",
+        "exclusive_conversations_s2026_e07_profile_guest_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_virtual_screening_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_virtual_screening_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_virtual_screening_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_virtual_screening_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_virtual_screening_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_virtual_screening_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_virtual_screening_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_virtual_screening_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_virtual_screening_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_virtual_screening_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_virtual_screening_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_virtual_screening_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_virtual_screening_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_virtual_screening_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_virtual_screening_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_virtual_screening_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_virtual_screening_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_virtual_screening_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s01_e02_virtual_screening_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s01_e02_virtual_screening_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_virtual_screening_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_virtual_screening_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s03_e07_virtual_screening_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s03_e07_virtual_screening_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_virtual_screening_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_virtual_screening_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s01_e02_virtual_screening_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s01_e02_virtual_screening_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Virtual Screening Episode",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_virtual_screening_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_virtual_screening_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_s03_e07_virtual_screening_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_s03_e07_virtual_screening_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Trailer",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_trailer_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_trailer_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_trailer_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_trailer_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Trailer",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_trailer_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_trailer_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_trailer_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_trailer_eng_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Trailer",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_trailer_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_trailer_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_trailer_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_trailer_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Trailer",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_trailer_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_trailer_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_trailer_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_trailer_las_bg_4x3_1440x1080.jpg"
+      ]
+    },
+    {
+      "type": "Extras",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_bts_eng_bg_16x9_3840x2160.jpg"
+      ]
+    },
+    {
+      "type": "Extras",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_bts_eng_bg_16x9_3840x2160.jpg"
+      ]
+    },
+    {
+      "type": "Extras",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_bts_las_bg_16x9_3840x2160.jpg"
+      ]
+    },
+    {
+      "type": "Extras",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_bts_las_bg_16x9_3840x2160.jpg"
+      ]
+    },
+    {
+      "type": "Carousel",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_carousel_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_carousel_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_carousel_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_carousel_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_carousel_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_carousel_eng_ca_1x1_3000x3000.jpg"
+      ]
+    },
+    {
+      "type": "Carousel",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_carousel_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_carousel_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_carousel_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_carousel_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_carousel_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_carousel_eng_ca_1x1_3000x3000.jpg"
+      ]
+    },
+    {
+      "type": "Carousel",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_carousel_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_carousel_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_carousel_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_carousel_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_carousel_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_carousel_las_ca_1x1_3000x3000.jpg"
+      ]
+    },
+    {
+      "type": "Carousel",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_carousel_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_carousel_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_carousel_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_carousel_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_carousel_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_carousel_las_ca_1x1_3000x3000.jpg"
+      ]
+    },
+    {
+      "type": "Podcast Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_eng_bg_1x1_3000x3000.jpg",
+        "profile_example_title_s01_e02_eng_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Podcast Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_eng_bg_1x1_3000x3000.jpg",
+        "profile_example_title_s03_e07_eng_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Podcast Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_las_bg_1x1_3000x3000.jpg",
+        "profile_example_title_s01_e02_las_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Podcast Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_las_bg_1x1_3000x3000.jpg",
+        "profile_example_title_s03_e07_las_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_eng_ca_1x1_3000x3000.jpg",
+        "profile_example_title_eng_ca_9x16_2160x3840.jpg",
+        "profile_example_title_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_eng_bg_9x16_2160x3840.jpg",
+        "profile_example_title_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_eng_ca_7x3_2450x1100.jpg",
+        "profile_example_title_eng_ca_16x9_3840x2160.jpg",
+        "profile_example_title_eng_ca_4x3_3200x2400.jpg",
+        "profile_example_title_eng_ca_3x4_2400x3200.jpg",
+        "profile_example_title_eng_ca_2x3_2000x3000.jpg",
+        "profile_example_title_eng_ca_1x1_3000x3000.jpg",
+        "profile_example_title_eng_ca_9x16_2160x3840.jpg",
+        "profile_example_title_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_eng_bg_2x3_2000x3000.jpg",
+        "profile_example_title_eng_bg_7x3_2450x1100.jpg",
+        "profile_example_title_eng_bg_9x16_2160x3840.jpg",
+        "profile_example_title_eng_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_las_ca_1x1_3000x3000.jpg",
+        "profile_example_title_las_ca_9x16_2160x3840.jpg",
+        "profile_example_title_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_las_bg_9x16_2160x3840.jpg",
+        "profile_example_title_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Series",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_las_ca_7x3_2450x1100.jpg",
+        "profile_example_title_las_ca_16x9_3840x2160.jpg",
+        "profile_example_title_las_ca_4x3_3200x2400.jpg",
+        "profile_example_title_las_ca_3x4_2400x3200.jpg",
+        "profile_example_title_las_ca_2x3_2000x3000.jpg",
+        "profile_example_title_las_ca_1x1_3000x3000.jpg",
+        "profile_example_title_las_ca_9x16_2160x3840.jpg",
+        "profile_example_title_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_las_bg_2x3_2000x3000.jpg",
+        "profile_example_title_las_bg_7x3_2450x1100.jpg",
+        "profile_example_title_las_bg_9x16_2160x3840.jpg",
+        "profile_example_title_las_tt_9x5_1800x1000.png"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_eng_bg_9x16_1080x1920.jpg",
+        "profile_example_title_s01_e02_eng_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "English",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_eng_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_eng_bg_9x16_1080x1920.jpg",
+        "profile_example_title_s03_e07_eng_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "01",
+        "episode": "02",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s01_e02_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s01_e02_las_bg_9x16_1080x1920.jpg",
+        "profile_example_title_s01_e02_las_bg_16x9_1920x1080.jpg"
+      ]
+    },
+    {
+      "type": "Familia Mini-Novelas Episodes",
+      "values": {
+        "title": "Profile Example Title",
+        "language": "Spanish",
+        "season": "03",
+        "episode": "07",
+        "year": "2026",
+        "interviewees": "Profile Guest",
+        "extra_usage": "Behind the Scenes / Making Of",
+        "art_tag": "bg - Background Art",
+        "aspect_ratio": "16x9",
+        "dimensions": "1920x1080"
+      },
+      "filenames": [
+        "profile_example_title_s03_e07_las_bg_16x9_3840x2160.jpg",
+        "profile_example_title_s03_e07_las_bg_9x16_1080x1920.jpg",
+        "profile_example_title_s03_e07_las_bg_16x9_1920x1080.jpg"
+      ]
+    }
+  ]
+}

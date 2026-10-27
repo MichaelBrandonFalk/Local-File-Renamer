@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.7 - 2026-10-27
+
+- Added NEB Artwork to normalize existing titles or replace placeholders and build required-art copy plans without spreadsheet lookups.
+- Link to NEB's live default profile and verify its current rules before preview and copy.
+- Reuse Series artwork for distinct Series and Season deliveries with type-specific filenames and required variants.
+- Detect multiple episodes in a source folder, filter episode ranges, and group outputs by type or episode.
+- Report excluded extras, missing required artwork, and ambiguous sources; allow explicit source selection for conflicts.
+- Keep original artwork unchanged and save a separate NEB results report.
+
 ## 1.6 - 2026-10-15
 
 - Added a self-contained Windows x64 executable and Linux Mint x64 DEB and portable archive.

@@ -29,6 +29,7 @@ cd "$PROJECT_DIR"
   --icon "$PROJECT_DIR/assets/local_file_renamer.icns" \
   --hidden-import tkinter \
   --add-data "$PROJECT_DIR/assets/local_file_renamer_icon.png:assets" \
+  --add-data "$PROJECT_DIR/assets/neb-default-profile.json:assets" \
   local_file_renamer_app.py
 
 mkdir -p "$PROJECT_DIR/downloads"

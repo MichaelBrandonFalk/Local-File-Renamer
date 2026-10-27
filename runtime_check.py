@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import platform
 import tempfile
+import time
 import traceback
 from pathlib import Path
 from unittest.mock import patch
@@ -86,6 +87,49 @@ def run_checks(report_path: Path) -> None:
             assert (source / "renamed.txt").read_bytes() == content
             assert not (source / "original.txt").exists()
             report["checks"].append("rename-in-place")
+            from neb_artwork import build_artwork_plan, read_profile
+            from neb_artwork_ui import NEBArtworkDialog
+            import certifi
+            import ssl
+
+            ssl.create_default_context(cafile=certifi.where())
+            profile = read_profile()
+            dialog = NEBArtworkDialog(app, profile=profile, auto_refresh=False)
+            dialog.geometry("760x600")
+            for type_name in (*profile.types, "Series + Season"):
+                dialog.selected_type.set(type_name)
+                dialog.show_fields()
+                dialog.update_idletasks()
+                pending = list(dialog.winfo_children())
+                left, top = dialog.winfo_rootx(), dialog.winfo_rooty()
+                while pending:
+                    widget = pending.pop()
+                    pending.extend(widget.winfo_children())
+                    if widget.winfo_ismapped():
+                        x, y = widget.winfo_rootx() - left, widget.winfo_rooty() - top
+                        assert x >= 0 and y >= 0 and x + widget.winfo_width() <= dialog.winfo_width() + 1 and y + widget.winfo_height() <= dialog.winfo_height() + 1, str(widget)
+            dialog.destroy()
+            art = root / "art"
+            art.mkdir()
+            for episode in (1, 2):
+                for dimensions in ("3840x2160", "1920x1080", "2560x1440"):
+                    (art / f"TITLE_s01_e{episode:02d}_eng_bg_16x9_{dimensions}.jpg").write_bytes(content)
+            plan = build_artwork_plan(str(art), profile, "Episode", {"title": "When Hope Calls", "language": "English"})
+            destination = root / "neb-copies"
+            app.accept_neb_plan(plan, str(destination))
+            with patch("local_file_renamer_app.fetch_current_profile", return_value=profile), patch(
+                "local_file_renamer_app.messagebox.askyesno", return_value=True
+            ), patch("local_file_renamer_app.messagebox.showerror") as error:
+                app.run_renames()
+                deadline = time.monotonic() + 8
+                while time.monotonic() < deadline and not (destination / "neb_artwork_results.csv").exists():
+                    app.update()
+                    time.sleep(0.01)
+            assert not error.called, error.call_args
+            assert len(list(destination.rglob("*.jpg"))) == 4
+            assert len(list(art.glob("*.jpg"))) == 6
+            assert (destination / "neb_artwork_results.csv").is_file()
+            report["checks"].extend(["neb-profile-conformance", "neb-dialog-all-art-types", "bundled-tls-certificates", "neb-two-episodes-required-only-copy-and-report"])
         report["success"] = True
     except Exception:
         report["success"] = False
