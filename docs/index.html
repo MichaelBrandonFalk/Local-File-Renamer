@@ -3,353 +3,175 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Local File Renamer</title>
+  <meta name="description" content="Download Local File Renamer for Windows, Linux Mint and Apple Silicon Macs. Rename with spreadsheet plans or prepare artwork using NEB Standard.">
+  <meta name="site-revision" content="2026-10-27.1">
+  <title>Local File Renamer - Downloads</title>
   <link rel="icon" type="image/png" href="assets/local_file_renamer_icon.png">
   <link rel="apple-touch-icon" href="assets/local_file_renamer_icon.png">
   <style>
     :root {
       color-scheme: light;
-      --ink: #2b2533;
-      --muted: #70657b;
-      --line: #ded4e8;
-      --panel: #ffffff;
-      --panel-soft: #fbf8fe;
-      --page: #f6f2fa;
-      --accent: #8b5cf6;
-      --accent-dark: #6d3fd8;
-      --accent-soft: #eee7ff;
-      --grey: #e5e1ea;
-      --lavender: #d9c9ff;
+      --page: #f7f8fb;
+      --paper: #fff;
+      --ink: #292631;
+      --muted: #716d7c;
+      --line: #e2dfe9;
+      --purple: #7048b6;
+      --purple-dark: #58358f;
+      --lavender: #f0ebf8;
+      --green: #3f705c;
     }
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.6; letter-spacing: 0; }
+    a { color: var(--purple); text-underline-offset: 3px; }
+    a:hover { color: var(--purple-dark); }
+    a:focus-visible, summary:focus-visible { outline: 3px solid var(--purple); outline-offset: 5px; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { line-height: 1.2; }
+    .wrap { width: 100%; max-width: 1120px; margin: auto; padding-left: 28px; padding-right: 28px; }
+    .topbar { background: var(--paper); border-bottom: 1px solid var(--line); }
+    .topbar-inner { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 14px; font-weight: 700; text-decoration: none; }
+    .brand img { width: 26px; height: 26px; border-radius: 5px; }
+    .nav { display: flex; align-items: center; gap: 26px; font-size: 13px; }
+    .nav a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); }
+    .icon { width: 17px; height: 17px; flex-shrink: 0; }
+    .intro { background: var(--lavender); border-bottom: 1px solid var(--line); padding: 42px 0 38px; }
+    .identity { display: flex; align-items: center; gap: 22px; }
+    .app-icon { width: 80px; height: 80px; border-radius: 16px; box-shadow: 0 6px 16px #29263115; flex-shrink: 0; }
+    .release { color: var(--purple); font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    h1 { font-size: 42px; font-weight: 750; }
+    .lead { max-width: 760px; margin-top: 20px; font-size: 17px; color: #625b70; }
+    .downloads-section { padding-top: 34px; padding-bottom: 34px; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    h2 { font-size: 23px; font-weight: 700; }
+    .runtime { display: flex; align-items: center; gap: 7px; color: var(--green); font-size: 12px; }
+    .downloads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .download-card { min-width: 0; min-height: 244px; display: flex; flex-direction: column; padding: 23px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; }
+    .platform { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+    .platform-icon { width: 25px; height: 25px; opacity: .7; }
+    h3 { font-size: 19px; }
+    .compatibility { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+    .compatibility span { display: block; color: #797480; font-size: 12px; margin-top: 2px; }
+    .download-button { margin-top: auto; min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 10px 12px; border-radius: 5px; background: var(--purple); color: white; font-size: 13px; font-weight: 650; text-decoration: none; text-align: center; }
+    .download-button:hover { background: var(--purple-dark); color: white; }
+    .download-button img { filter: invert(1); }
+    .card-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; min-height: 20px; margin-top: 12px; font-size: 11px; }
+    .card-links a, .quiet-link { color: var(--muted); text-decoration: none; }
+    .card-links a:hover, .quiet-link:hover { text-decoration: underline; }
+    .release-links { display: flex; justify-content: space-between; gap: 16px; margin-top: 17px; font-size: 12px; color: var(--muted); }
+    .artwork-section { border-top: 1px solid var(--line); padding-top: 34px; padding-bottom: 36px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 64px; }
+    .eyebrow { color: var(--purple); font-size: 10px; font-weight: 750; margin-bottom: 9px; }
+    .artwork-section p { margin-top: 12px; color: var(--muted); font-size: 14px; }
+    .example { margin-top: 20px; border-left: 2px solid #d6cae8; padding-left: 14px; }
+    .example-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; align-items: start; margin-top: 9px; }
+    .example-label { font-size: 10px; color: var(--muted); padding-top: 1px; }
+    .filename { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; overflow-wrap: anywhere; }
+    .example-row:last-child .filename { color: var(--green); }
+    .artwork-section .preview-note { font-size: 11px; margin-top: 16px; }
+    .delivery-list { padding-top: 16px; }
+    .delivery { padding: 13px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 16px; align-items: baseline; }
+    .delivery:last-child { border-bottom: 0; }
+    .delivery strong { font-size: 13px; }
+    .delivery span { font-size: 12px; color: var(--muted); }
+    .workflow { background: #eeeff3; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 28px 0; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+    .step { display: flex; gap: 12px; align-items: baseline; }
+    .number { font-size: 11px; font-weight: 700; color: var(--purple); }
+    .step strong { font-size: 13px; }
+    .step p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .help { padding-top: 32px; padding-bottom: 34px; max-width: 840px; }
+    .help h2 { font-size: 19px; margin-bottom: 14px; }
+    details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+    summary { cursor: pointer; list-style: none; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; gap: 18px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--purple); font-size: 18px; line-height: 1; }
+    details[open] summary::after { content: "-"; }
+    details p { font-size: 13px; color: var(--muted); margin-top: 12px; max-width: 700px; }
+    code { font-size: 12px; overflow-wrap: anywhere; }
+    footer { border-top: 1px solid var(--line); background: var(--paper); }
+    .footer-inner { padding-top: 20px; padding-bottom: 20px; display: flex; justify-content: space-between; gap: 18px; font-size: 11px; color: var(--muted); }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
+    @media (max-width: 850px) {
+      .downloads { grid-template-columns: 1fr; }
+      .download-card { min-height: 220px; }
+      h1 { font-size: 36px; }
+      .download-card { padding: 18px; }
+      .artwork-section { gap: 32px; }
+      .section-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .wrap { padding-left: 22px; padding-right: 22px; }
+      .delivery { grid-template-columns: 100px minmax(0, 1fr); }
     }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--page);
-      color: var(--ink);
-      line-height: 1.5;
-    }
-    main {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 44px 20px 36px;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-      gap: 28px;
-      align-items: stretch;
-      min-height: 520px;
-    }
-    .intro {
-      display: flex;
-      min-height: 460px;
-      flex-direction: column;
-      justify-content: center;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      padding: 36px;
-      box-shadow: 0 18px 48px rgba(84, 63, 117, 0.12);
-    }
-    .eyebrow {
-      width: fit-content;
-      margin-bottom: 16px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      font-weight: 800;
-    }
-    .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-    .app-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(84, 63, 117, 0.22);
-    }
-    h1 {
-      max-width: 680px;
-      margin: 0;
-      font-size: clamp(2.6rem, 7vw, 5.4rem);
-      line-height: 0.96;
-      letter-spacing: 0;
-    }
-    p {
-      margin: 18px 0 0;
-      max-width: 680px;
-      color: var(--muted);
-      font-size: 1.08rem;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 26px;
-    }
-    .button {
-      display: inline-flex;
-      min-height: 48px;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      padding: 0 18px;
-      font-weight: 800;
-      text-decoration: none;
-    }
-    .download {
-      background: var(--accent);
-      color: white;
-    }
-    .download:hover {
-      background: var(--accent-dark);
-    }
-    .secondary {
-      border: 1px solid var(--line);
-      background: var(--grey);
-      color: var(--ink);
-    }
-    .mock {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel-soft);
-      padding: 18px;
-      box-shadow: 0 18px 48px rgba(84, 63, 117, 0.12);
-    }
-    .bar {
-      height: 12px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #f87171, #facc15, #34d399);
-      width: 74px;
-    }
-    .mock-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .mock-card {
-      min-height: 150px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-      padding: 16px;
-    }
-    .mock-title {
-      height: 14px;
-      width: 120px;
-      border-radius: 999px;
-      background: var(--accent-soft);
-    }
-    .mock-field {
-      height: 34px;
-      margin-top: 18px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-    }
-    .mock-button-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 18px;
-    }
-    .mock-button {
-      height: 34px;
-      width: 100px;
-      border-radius: 8px;
-      background: var(--grey);
-    }
-    .mock-button.primary {
-      background: var(--accent);
-    }
-    .mock-table {
-      flex: 1;
-      min-height: 240px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-    }
-    .mock-head,
-    .mock-row {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    }
-    .mock-head span {
-      background: var(--accent-soft);
-      color: var(--ink);
-      font-size: 0.82rem;
-      font-weight: 800;
-      padding: 10px;
-    }
-    .mock-row span {
-      min-height: 38px;
-      border-top: 1px solid #eee8f4;
-      padding: 10px;
-    }
-    section {
-      display: grid;
-      grid-template-columns: 0.7fr 1fr;
-      gap: 28px;
-      padding: 34px 0;
-      border-bottom: 1px solid var(--line);
-    }
-    h2 {
-      margin: 0;
-      font-size: 1.45rem;
-      letter-spacing: 0;
-    }
-    ul {
-      margin: 0;
-      padding-left: 20px;
-      color: var(--muted);
-    }
-    li + li {
-      margin-top: 8px;
-    }
-    code {
-      border-radius: 5px;
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      padding: 2px 5px;
-    }
-    footer {
-      padding-top: 28px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    footer a {
-      color: var(--accent-dark);
-      font-weight: 700;
-    }
-    @media (max-width: 820px) {
-      main {
-        padding-top: 20px;
-      }
-      .hero,
-      section,
-      .mock-grid {
-        grid-template-columns: 1fr;
-      }
-      .hero {
-        min-height: auto;
-      }
-      .intro {
-        min-height: auto;
-        padding: 24px;
-      }
+    @media (max-width: 700px) {
+      .downloads, .artwork-section, .steps { grid-template-columns: 1fr; }
+      .download-card { min-height: 220px; }
+      .artwork-section { gap: 12px; }
+      .steps { gap: 18px; }
+      .nav { gap: 16px; font-size: 12px; }
+      .nav .secondary-label { display: none; }
+      .release-links { flex-direction: column; gap: 5px; }
+      .intro { padding: 30px 0; }
+      .identity { gap: 16px; }
+      .app-icon { width: 60px; height: 60px; border-radius: 12px; }
+      h1 { font-size: 32px; }
+      .lead { font-size: 15px; }
+      .wrap { padding-left: 20px; padding-right: 20px; }
+      .footer-inner { flex-direction: column; gap: 10px; }
+      .brand { font-size: 12px; }
+      .topbar-inner { min-height: 60px; gap: 12px; }
+      .delivery-list { padding-top: 0; }
     }
   </style>
 </head>
 <body>
+  <header class="topbar"><div class="wrap topbar-inner">
+    <a class="brand" href="./"><img src="assets/local_file_renamer_icon.png" alt="">Local File Renamer</a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="https://michaelbrandonfalk.github.io/NameEverythingBetter/">NEB<span class="secondary-label"> Artwork</span><img class="icon" src="assets/icons/arrow-up-right.svg" alt=""></a>
+      <a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer" aria-label="Source on GitHub"><img class="icon" src="assets/icons/github.svg" alt=""><span class="secondary-label">Source</span></a>
+    </nav>
+  </div></header>
+  <div class="intro"><div class="wrap">
+    <div class="identity"><img class="app-icon" src="assets/local_file_renamer_icon.png" alt="Local File Renamer app icon"><div><div class="release">Version 1.7</div><h1>Local File Renamer</h1></div></div>
+    <p class="lead">Rename files in place or save a renamed copy. Use a spreadsheet plan, or let NEB prepare the artwork names and required delivery sets.</p>
+  </div></div>
   <main>
-    <div class="hero">
-      <div class="intro">
-        <div class="brand-row">
-          <img class="app-icon" src="assets/local_file_renamer_icon.png" alt="">
-          <div class="eyebrow">Desktop app - v1.7</div>
-        </div>
-        <h1>Local File Renamer</h1>
-        <p>Name required artwork with the current NEB Standard profile, or use a CSV or spreadsheet rename plan. Save renamed copies while keeping your originals. Available for Windows, Linux Mint, and macOS.</p>
-        <div class="actions">
-          <a class="button download" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Windows_x64.exe">Windows</a>
-          <a class="button download" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Linux_Mint_amd64.deb">Linux Mint</a>
-          <a class="button download" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_macOS_Apple_Silicon.zip">macOS Apple Silicon</a>
-          <a class="button secondary" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer">View Source</a>
-        </div>
+    <section class="wrap downloads-section" aria-labelledby="downloads-heading">
+      <div class="section-heading"><h2 id="downloads-heading">Download the app</h2><span class="runtime"><img class="icon" src="assets/icons/circle-check.svg" alt="">No Python or developer tools needed</span></div>
+      <div class="downloads">
+        <article class="download-card"><div class="platform"><img class="platform-icon" src="assets/icons/monitor.svg" alt=""><h3>Windows</h3></div><p class="compatibility">Windows 10 / 11 &middot; 64-bit<span>Portable application &middot; .exe</span></p><a class="download-button" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Windows_x64.exe"><img class="icon" src="assets/icons/download.svg" alt="">Download for Windows</a><div class="card-links"><a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/SHA256SUMS-Windows.txt">SHA-256 checksum</a></div></article>
+        <article class="download-card"><div class="platform"><img class="platform-icon" src="assets/icons/package.svg" alt=""><h3>Linux Mint</h3></div><p class="compatibility">Mint 21.x / 22.x &middot; 64-bit AMD / Intel<span>Installable package &middot; .deb</span></p><a class="download-button" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Linux_Mint_amd64.deb"><img class="icon" src="assets/icons/download.svg" alt="">Download for Linux Mint</a><div class="card-links"><a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Linux_x64.tar.gz">Portable archive</a><a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/SHA256SUMS-Linux.txt">SHA-256 checksum</a></div></article>
+        <article class="download-card"><div class="platform"><img class="platform-icon" src="assets/icons/laptop.svg" alt=""><h3>Mac</h3></div><p class="compatibility">Apple Silicon &middot; macOS 11 or newer<span>Application bundle &middot; .zip</span></p><a class="download-button" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_macOS_Apple_Silicon.zip"><img class="icon" src="assets/icons/download.svg" alt="">Download for Mac</a><div class="card-links"><a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/SHA256SUMS-macOS.txt">SHA-256 checksum</a></div></article>
       </div>
-      <div class="mock" aria-hidden="true">
-        <div class="bar"></div>
-        <div class="mock-grid">
-          <div class="mock-card">
-            <div class="mock-title"></div>
-            <div class="mock-field"></div>
-            <div class="mock-button-row">
-              <div class="mock-button"></div>
-              <div class="mock-button primary"></div>
-            </div>
-          </div>
-          <div class="mock-card">
-            <div class="mock-title"></div>
-            <div class="mock-field"></div>
-            <div class="mock-button-row">
-              <div class="mock-button"></div>
-              <div class="mock-button primary"></div>
-            </div>
-          </div>
-        </div>
-        <div class="mock-table">
-          <div class="mock-head">
-            <span>Folder Location</span>
-            <span>Current Name</span>
-            <span>Desired Name</span>
-            <span>Status</span>
-          </div>
-          <div class="mock-row"><span></span><span></span><span></span><span></span></div>
-          <div class="mock-row"><span></span><span></span><span></span><span></span></div>
-          <div class="mock-row"><span></span><span></span><span></span><span></span></div>
-        </div>
+      <div class="release-links"><span>Self-contained downloads. Your files stay on your computer.</span><a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/tag/v1.7">What's new in v1.7 &rarr;</a></div>
+    </section>
+    <section class="wrap artwork-section" aria-labelledby="artwork-heading">
+      <div><div class="eyebrow">CONNECTED TO NEB STANDARD</div><h2 id="artwork-heading">Artwork, already named right.</h2>
+        <p>Clean up title names and copy only the art you need, using the current default profile from <a href="https://michaelbrandonfalk.github.io/NameEverythingBetter/">NameEverythingBetter</a>.</p>
+        <div class="example" aria-label="Example filename normalization">
+          <div class="example-row"><span class="example-label">Original</span><span class="filename">When Hope Callseng_bg_16x9_3840x2160.jpg</span></div>
+          <div class="example-row"><span class="example-label">NEB</span><span class="filename">when_hope_calls_eng_bg_16x9_3840x2160.jpg</span></div>
+        </div><p class="preview-note">Preview first. Missing artwork and conflicting matches are flagged before copying.</p>
       </div>
-    </div>
-
-    <section>
-      <h2>Compatibility</h2>
-      <ul>
-        <li>All downloads bundle Python and Tcl/Tk. No Python installation or developer tools required.</li>
-        <li>Windows 10/11, 64-bit: open the downloaded <code>.exe</code>.</li>
-        <li>Linux Mint 21.x/22.x, 64-bit: install the <code>.deb</code>, then open Local File Renamer from the application menu.</li>
-        <li>macOS 11 Big Sur or newer, Apple Silicon: extract the ZIP and open the app.</li>
-        <li>Prefer Linux without installation? <a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Linux_x64.tar.gz">Download the portable archive</a>, extract it, and run <code>local-file-renamer</code>.</li>
-      </ul>
+      <div class="delivery-list">
+        <div class="delivery"><strong>Movie</strong><span>One title. Only the required artwork.</span></div>
+        <div class="delivery"><strong>Series + Season</strong><span>Shared source art, separate delivery sets with the correct names.</span></div>
+        <div class="delivery"><strong>Episode</strong><span>Multiple episodes from one folder, filtered to the required art types.</span></div>
+      </div>
     </section>
-
-    <section>
-      <h2>NEB Artwork</h2>
-      <ul>
-        <li>Use the live default profile from <a href="https://michaelbrandonfalk.github.io/NameEverythingBetter/">NameEverythingBetter</a> for title cleanup, filename recipes, and required artwork.</li>
-        <li>Replace a placeholder title or normalize the title already in a filename.</li>
-        <li>Build Movie deliveries, reuse the same source art for separate Series and Season deliveries, or process multiple episodes from one folder.</li>
-        <li>Copy required matches only. Review missing art and duplicate sources; extra files remain in the source folder.</li>
-        <li>Defaults are verified before preview and copy. Changed rules require a new preview; originals stay unchanged.</li>
-      </ul>
+    <section class="workflow" aria-label="Spreadsheet workflow"><div class="wrap steps">
+      <div class="step"><span class="number">01</span><div><strong>Scan your folder</strong><p>Export the file list as CSV or Excel.</p></div></div>
+      <div class="step"><span class="number">02</span><div><strong>Prepare your names</strong><p>Edit the desired names, then load the plan.</p></div></div>
+      <div class="step"><span class="number">03</span><div><strong>Review and run</strong><p>Rename originals or copy to a new location.</p></div></div>
+    </div></section>
+    <section class="wrap help" aria-labelledby="help-heading">
+      <h2 id="help-heading">A few practical details</h2>
+      <details><summary>How do I open the download?</summary><p>Windows: open the downloaded .exe. Linux Mint: install the .deb, then open Local File Renamer from the applications menu. For the portable Linux archive, extract it and run <code>local-file-renamer</code>. Mac: extract the ZIP and open the app. See the <a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/tag/v1.7">release notes</a> for platform-specific startup guidance.</p></details>
+      <details><summary>Do I need to install anything else?</summary><p>No Python, spreadsheet application, or developer tools are needed to run the app. The runtime is bundled. Manual CSV and Excel plans work offline; NEB artwork preparation uses an internet connection to verify the current default rules. Files are processed locally.</p></details>
+      <details><summary>Will it change my original files?</summary><p>Manual rename plans can rename originals in place. Select Rename copies to keep them untouched and choose an output folder. NEB artwork deliveries always copy required matches into a new delivery location, leaving source files unchanged.</p></details>
     </section>
-
-    <section>
-      <h2>Workflow</h2>
-      <ul>
-        <li>Choose a local folder and export a rename plan as CSV or `.xlsx`.</li>
-        <li>Edit the <code>desired_name</code> column in your preferred spreadsheet tool.</li>
-        <li>Browse to the edited plan, load it, then click <code>Run Renames</code>.</li>
-        <li>To keep originals, select <code>Rename copies</code> and use the new Downloads folder or choose a different output folder.</li>
-        <li>Copy mode saves renamed files and a separate results plan in the output folder.</li>
-        <li>Review the status column after the run finishes.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Plan Columns</h2>
-      <ul>
-        <li><code>folder_location</code>: folder containing the file.</li>
-        <li><code>current_name</code>: existing file name.</li>
-        <li><code>desired_name</code>: new file name.</li>
-        <li><code>status</code>: result written by the app.</li>
-      </ul>
-    </section>
-
-    <footer>
-      Source code and releases are available on <a href="https://github.com/MichaelBrandonFalk/Local-File-Renamer">GitHub</a>.
-    </footer>
   </main>
+  <footer><div class="wrap footer-inner"><span>Local File Renamer &middot; v1.7</span><div class="footer-links"><a class="quiet-link" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer">Source on GitHub</a><a class="quiet-link" href="https://michaelbrandonfalk.github.io/NameEverythingBetter/">NameEverythingBetter</a><a class="quiet-link" href="https://github.com/MichaelBrandonFalk/Local-File-Renamer/issues">Report an issue</a></div></div></footer>
 </body>
 </html>
