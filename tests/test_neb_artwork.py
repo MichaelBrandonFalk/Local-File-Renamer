@@ -182,6 +182,15 @@ class NEBArtworkTests(unittest.TestCase):
             copy_artwork_plan(plan, plan.rows, str(self.output))
         self.assertEqual(len(list(self.source.iterdir())), 1)
 
+    def test_extra_type_selection_does_not_relabel_another_extra_category(self):
+        variant = self.profile.types["Extras"]["variants"][0]
+        filename = self.profile.filename("Extras", {"title": "Example", "language": "English", "extra_usage": "Deleted Scenes"}, variant)
+        self.put(filename)
+        with self.assertRaisesRegex(NEBError, "field filters"):
+            self.plan("Extras", extra_usage="Behind the Scenes / Making Of")
+        plan = self.plan("Extras", extra_usage="Deleted Scenes")
+        self.assertIn(filename, [row.desired_name for row in plan.rows])
+
 
 if __name__ == "__main__":
     unittest.main()

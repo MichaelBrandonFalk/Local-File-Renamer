@@ -325,6 +325,12 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
             subject["language"] = values.get("language", "English")
             if source.values["language"] != subject["language"]:
                 continue
+            if any(
+                definition["type"] == "select" and source.values.get(definition["key"])
+                and subject.get(definition["key"]) and source.values[definition["key"]] != subject[definition["key"]]
+                for definition in profile.fields(type_name)
+            ):
+                continue
             for key in ("season", "episode", "year"):
                 original = source.values.get(key, "")
                 if key == "season" and subject.get(key) and source.values.get("season_from_directory"):
@@ -415,7 +421,7 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
                     row.desired_name = ""
                     row.status = "Conflict: multiple requirements use the same output filename"
     if not requirements and files:
-        issues = next(iter(problems.values()), "No files match the selected language and episode filters.")
+        issues = next(iter(problems.values()), "No files match the selected type, language, and field filters.")
         raise NEBError(issues)
     return ArtworkPlan(profile, plan_rows, requirements, folder)
 

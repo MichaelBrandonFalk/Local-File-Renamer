@@ -58,6 +58,7 @@ class NEBArtworkDialog(tk.Toplevel):
         self.profile_status = tk.StringVar(value="Bundled or cached NEB Standard; live verification pending")
         self.values = {}
         body = ttk.Frame(self, style="App.TFrame", padding=20)
+        self.body = body
         body.pack(fill=tk.BOTH, expand=True)
         body.columnconfigure(1, weight=1)
         ttk.Label(body, text="NEB Artwork", style="CardTitle.TLabel", background="#F6F2FA").grid(row=0, column=0, columnspan=3, sticky=tk.W)
@@ -86,7 +87,8 @@ class NEBArtworkDialog(tk.Toplevel):
         body.rowconfigure(7, weight=1)
         self.build_button = ttk.Button(body, text="Build Preview", command=self.build_preview, style="Primary.TButton")
         self.build_button.grid(row=8, column=2, sticky=tk.E, pady=(18, 0))
-        ttk.Button(body, text="Cancel", command=self.destroy, style="Secondary.TButton").grid(row=8, column=1, sticky=tk.E, padx=(0, 12), pady=(18, 0))
+        self.cancel_button = ttk.Button(body, text="Cancel", command=self.destroy, style="Secondary.TButton")
+        self.cancel_button.grid(row=8, column=1, sticky=tk.E, padx=(0, 12), pady=(18, 0))
         self.update_profile(profile)
         if auto_refresh:
             parent.after(50, lambda: self.refresh_profile() if self.winfo_exists() else None)
@@ -127,9 +129,12 @@ class NEBArtworkDialog(tk.Toplevel):
             control.grid(row=row, column=column + 1, sticky=tk.EW, pady=6)
 
     def busy(self, value):
-        state = tk.DISABLED if value else tk.NORMAL
-        self.refresh_button.configure(state=state)
-        self.build_button.configure(state=state)
+        pending = list(self.body.winfo_children())
+        while pending:
+            widget = pending.pop()
+            pending.extend(widget.winfo_children())
+            if widget is not self.cancel_button and isinstance(widget, (ttk.Button, ttk.Entry, ttk.Checkbutton)):
+                widget.state(["disabled" if value else "!disabled"])
 
     def failed(self, error):
         self.busy(False)
