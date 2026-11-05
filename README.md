@@ -4,12 +4,12 @@ Local File Renamer is a desktop app for Windows, Linux Mint, and macOS. Build a 
 
 ## Download
 
-Download v1.7 from the public releases page:
+Download v1.8 from the public releases page:
 
-- [Windows x64 executable](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Windows_x64.exe)
-- [Linux Mint amd64 installer](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Linux_Mint_amd64.deb)
-- [Linux x64 portable archive](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_Linux_x64.tar.gz)
-- [macOS Apple Silicon ZIP](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.7/Local_File_Renamer_v1_7_macOS_Apple_Silicon.zip)
+- [Windows x64 executable](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.8/Local_File_Renamer_v1_8_Windows_x64.exe)
+- [Linux Mint amd64 installer](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.8/Local_File_Renamer_v1_8_Linux_Mint_amd64.deb)
+- [Linux x64 portable archive](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.8/Local_File_Renamer_v1_8_Linux_x64.tar.gz)
+- [macOS Apple Silicon ZIP](https://github.com/MichaelBrandonFalk/Local-File-Renamer/releases/download/v1.8/Local_File_Renamer_v1_8_macOS_Apple_Silicon.zip)
 
 ## Compatibility
 
