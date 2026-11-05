@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9 - 2026-11-05
+
+- Add opt-in shared artwork reuse for multiple selected episodes, accepting comma-separated numbers and ranges.
+- Keep numbered episode art assigned to its original episode and retain source-conflict checks.
+- Explain when unnumbered source art needs the shared-art option instead of reporting that Episode is required.
+
 ## 1.8 - 2026-11-05
 
 - Accept artwork filenames without a language marker; use the Language selection, defaulting to English (`eng`).

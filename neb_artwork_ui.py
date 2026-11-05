@@ -55,6 +55,7 @@ class NEBArtworkDialog(tk.Toplevel):
         self.recursive = tk.BooleanVar(value=True)
         self.required_only = tk.BooleanVar(value=True)
         self.group_output = tk.BooleanVar(value=True)
+        self.reuse_shared_art = tk.BooleanVar(value=False)
         self.profile_status = tk.StringVar(value="Bundled or cached NEB Standard; live verification pending")
         self.values = {}
         body = ttk.Frame(self, style="App.TFrame", padding=20)
@@ -113,7 +114,8 @@ class NEBArtworkDialog(tk.Toplevel):
     def show_fields(self):
         for widget in self.fields.winfo_children():
             widget.destroy()
-        for index, definition in enumerate(self.profile.fields(self.selected_type.get())):
+        definitions = self.profile.fields(self.selected_type.get())
+        for index, definition in enumerate(definitions):
             key = definition["key"]
             initial = "English" if key == "language" else ""
             variable = self.values.setdefault(key, tk.StringVar(value=initial))
@@ -127,6 +129,8 @@ class NEBArtworkDialog(tk.Toplevel):
             else:
                 control = ttk.Entry(self.fields, textvariable=variable, width=15)
             control.grid(row=row, column=column + 1, sticky=tk.EW, pady=6)
+        if any(definition["key"] == "episode" for definition in definitions):
+            ttk.Checkbutton(self.fields, text="Reuse shared artwork for selected episodes", variable=self.reuse_shared_art).grid(row=(len(definitions) + 1) // 2, column=0, columnspan=4, sticky=tk.W, pady=(8, 0))
 
     def busy(self, value):
         pending = list(self.body.winfo_children())
@@ -158,12 +162,13 @@ class NEBArtworkDialog(tk.Toplevel):
             return
         values = {key: variable.get().strip() for key, variable in self.values.items()}
         recursive, required, grouped = self.recursive.get(), self.required_only.get(), self.group_output.get()
+        reuse_shared = self.reuse_shared_art.get()
         self.busy(True)
         self.profile_status.set("Verifying NEB defaults and matching source artwork...")
 
         def build():
             profile = fetch_current_profile()
-            return build_artwork_plan(folder, profile, selected, values, recursive=recursive, required_only=required, group_output=grouped)
+            return build_artwork_plan(folder, profile, selected, values, recursive=recursive, required_only=required, group_output=grouped, reuse_shared_art=reuse_shared)
 
         def complete(plan):
             self.parent.accept_neb_plan(plan, output)

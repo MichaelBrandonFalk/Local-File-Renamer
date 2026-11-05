@@ -95,6 +95,7 @@ def run_checks(report_path: Path) -> None:
             ssl.create_default_context(cafile=certifi.where())
             profile = read_profile()
             dialog = NEBArtworkDialog(app, profile=profile, auto_refresh=False)
+            assert not dialog.reuse_shared_art.get()
             dialog.geometry("760x600")
             for type_name in (*profile.types, "Series + Season"):
                 dialog.selected_type.set(type_name)
@@ -130,6 +131,18 @@ def run_checks(report_path: Path) -> None:
             assert len(list(art.glob("*.jpg"))) == 6
             assert (destination / "neb_artwork_results.csv").is_file()
             report["checks"].extend(["neb-profile-conformance", "neb-dialog-all-art-types", "bundled-tls-certificates", "neb-two-episodes-required-only-copy-and-report"])
+            from neb_artwork import copy_artwork_plan
+            shared = root / "shared-art"
+            shared.mkdir()
+            for dimensions in ("3840x2160", "1920x1080"):
+                (shared / f"Show_BG_16x9_{dimensions}.jpg").write_bytes(content)
+            shared_plan = build_artwork_plan(str(shared), profile, "Episode", {"title": "Show", "season": "1", "episode": "1-12", "language": "English"}, reuse_shared_art=True)
+            shared_output = root / "shared-copies"
+            copy_artwork_plan(shared_plan, shared_plan.rows, str(shared_output))
+            assert len(list(shared_output.rglob("*.jpg"))) == 24
+            assert len(list(shared.glob("*.jpg"))) == 2
+            assert all(path.read_bytes() == content for path in shared_output.rglob("*.jpg"))
+            report["checks"].append("neb-shared-art-twelve-episode-copy")
         report["success"] = True
     except Exception:
         report["success"] = False

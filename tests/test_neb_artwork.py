@@ -129,6 +129,47 @@ class NEBArtworkTests(unittest.TestCase):
         copy_artwork_plan(plan, plan.rows, str(self.output))
         self.assertFalse((self.output / "s01_e03").exists())
 
+    def test_shared_art_reuse_accepts_lists_and_ranges(self):
+        for dimensions in ("3840x2160", "1920x1080"):
+            self.put(f"Show_BG_16x9_{dimensions}.jpg")
+        for selection in ("1,2,3,4,5,6,7,8,9,10,11,12", "1-12"):
+            with self.subTest(selection=selection):
+                plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": selection, "language": "English"}, reuse_shared_art=True)
+                self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), 24)
+                self.assertTrue(all(len(item.rows) == 1 for item in plan.requirements))
+                self.assertEqual({item.destination for item in plan.requirements}, {f"s01_e{number:02d}" for number in range(1, 13)})
+        copy_artwork_plan(plan, plan.rows, str(self.output))
+        self.assertEqual(len(list(self.output.rglob("*.jpg"))), 24)
+        self.assertEqual(len(list(self.source.iterdir())), 2)
+        self.assertTrue(all(path.read_bytes() == b"original artwork" for path in self.output.rglob("*.jpg")))
+
+    def test_shared_art_reuse_requires_explicit_opt_in_and_selection(self):
+        self.put("Show_BG_16x9_3840x2160.jpg")
+        with self.assertRaisesRegex(NEBError, "Reuse shared artwork"):
+            self.plan(season="1", episode="1-12")
+        with self.assertRaisesRegex(NEBError, "Enter the episode numbers"):
+            build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1"}, reuse_shared_art=True)
+        self.assertFalse(self.output.exists())
+
+    def test_shared_mode_does_not_reassign_numbered_episode_files(self):
+        self.put("Show_s01_e01_eng_bg_16x9_3840x2160.jpg")
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "1-3", "language": "English"}, reuse_shared_art=True)
+        self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), 1)
+        self.assertEqual(sum(not item.rows for item in plan.requirements), 5)
+        self.assertTrue(all(not item.rows for item in plan.requirements if item.destination != "s01_e01"))
+
+    def test_shared_reuse_preserves_conflicts_and_supports_flat_output(self):
+        self.put("Show_BG_16x9_3840x2160.jpg")
+        self.put("Show_BG_16x9_3840x2160_V2.jpg")
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "1-2", "language": "English"}, reuse_shared_art=True, group_output=False)
+        conflicts = [item for item in plan.requirements if len(item.rows) == 2]
+        self.assertEqual(len(conflicts), 2)
+        for item in conflicts:
+            self.assertTrue(all(not row.desired_name for row in item.rows))
+            plan.choose_match(item.rows[0])
+        copy_artwork_plan(plan, plan.rows, str(self.output))
+        self.assertEqual(len(list(self.output.glob("*.jpg"))), 2)
+
     def test_duplicate_sources_require_selection_and_copy_the_chosen_version(self):
         original = "Show_s01_e01_eng_bg_16x9_3840x2160.jpg"
         alternate = "Show_s01_e01_eng_bg_16x9_3840x2160_V2.jpg"

@@ -309,7 +309,7 @@ class ArtworkPlan:
         return False
 
 
-def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, values: dict, *, recursive: bool = True, required_only: bool = True, group_output: bool = True) -> ArtworkPlan:
+def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, values: dict, *, recursive: bool = True, required_only: bool = True, group_output: bool = True, reuse_shared_art: bool = False) -> ArtworkPlan:
     types = profile.type_names(selected_type)
     raw_rows = scan_folder(folder, recursive)
     files = [parsed for row in raw_rows if (parsed := parse_art_file(row, profile)) is not None]
@@ -323,9 +323,17 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
     for type_name in types:
         definition = profile.types[type_name]
         keys = {item["key"] for item in profile.fields(type_name)}
+        if reuse_shared_art and "episode" in keys and not wanted_episodes:
+            raise NEBError("Enter the episode numbers or range to receive the shared artwork, such as 1-12.")
         subjects = {}
+        sources = []
         for raw_source in files:
             source = replace(raw_source, values=profile_source_values(raw_source, profile, type_name))
+            if reuse_shared_art and "episode" in keys and not source.values.get("episode"):
+                sources.extend(replace(source, values={**source.values, "episode": str(episode)}) for episode in sorted(wanted_episodes))
+            else:
+                sources.append(source)
+        for source in sources:
             subject = {key: str(values.get(key, "")).strip() for key in keys}
             subject["language"] = values.get("language", "English")
             if source.values["language"] and source.values["language"] != subject["language"]:
@@ -343,6 +351,10 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
                 if key not in keys:
                     continue
                 if key == "episode":
+                    if not original and len(wanted_episodes) > 1:
+                        problems[id(source.row)] = "Needs input: source artwork has no episode number. Enable 'Reuse shared artwork for selected episodes' to copy it to every selected episode, or choose numbered episode artwork."
+                        subject = None
+                        break
                     if wanted_episodes and original and int(original) not in wanted_episodes:
                         subject = None
                         break
