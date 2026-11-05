@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8 - 2026-11-05
+
+- Accept artwork filenames without a language marker; use the Language selection, defaulting to English (`eng`).
+- Recognize CarouselArt and TitleTreatment source tags and whitespace after an art tag.
+- Keep explicit source languages as filters and retain duplicate-source conflict checks.
+- Report preview failures separately from live-profile verification failures.
+
 ## 1.7 - 2026-10-27
 
 - Added NEB Artwork to normalize existing titles or replace placeholders and build required-art copy plans without spreadsheet lookups.

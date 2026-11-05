@@ -212,16 +212,20 @@ class ArtFile:
 
 
 def parse_art_file(row: RenameRow, profile: NEBProfile) -> ArtFile | None:
-    tags = "|".join(re.escape(tag) for tag in profile.extensions)
-    languages = "|".join(re.escape(code) for code in sorted({profile.rules["englishArt"], profile.rules["spanishArt"], "eng", "las"}, key=len, reverse=True))
+    aliases = {"carouselart": "ca", "titletreatment": "tt"}
+    aliases = {name: tag for name, tag in aliases.items() if tag in profile.extensions}
+    tags = "|".join(re.escape(tag) for tag in sorted(set(profile.extensions) | set(aliases), key=len, reverse=True))
+    languages = "|".join((r"(?<=[_ .-])" if len(code) < 3 else "") + re.escape(code) for code in sorted({profile.rules["englishArt"], profile.rules["spanishArt"], "eng", "las"}, key=len, reverse=True))
     match = re.fullmatch(
-        rf"(?P<head>.*?)(?P<language>{languages})_(?P<tag>{tags})_(?P<ratio>[0-9]+x[0-9]+)_(?P<dimensions>[0-9]+x[0-9]+)(?:[_ -]+v[0-9]+| ?\([0-9]+\))?\.(?P<extension>jpg|jpeg|png)",
+        rf"(?P<head>.*?)(?:(?P<language>{languages})_|_)(?P<tag>{tags})\s*_(?P<ratio>[0-9]+x[0-9]+)_(?P<dimensions>[0-9]+x[0-9]+)(?:[_ -]+v[0-9]+| ?\([0-9]+\))?\.(?P<extension>jpg|jpeg|png)",
         row.current_name, flags=re.I,
     )
     if not match:
         return None
     head = match["head"].rstrip("_ .-")
-    values = {"language": "Spanish" if match["language"].casefold() in {profile.rules["spanishArt"].casefold(), "las"} else "English"}
+    # Unlabelled downloads use the user's selected language; explicit labels remain filters.
+    language = match["language"]
+    values = {"language": ("Spanish" if language.casefold() in {profile.rules["spanishArt"].casefold(), "las"} else "English") if language else ""}
     values["source_prefix"] = head
     episode = re.search(r"(?:s([0-9]{1,4})[_ .-]*)?(?:e|episode[_ .-]*)([0-9]{1,3})$", head, flags=re.I)
     season = re.search(r"(?:^|[_ .-])s([0-9]{1,4})$", head, flags=re.I)
@@ -241,12 +245,13 @@ def parse_art_file(row: RenameRow, profile: NEBProfile) -> ArtFile | None:
                 values["season_from_directory"] = True
                 break
     values["title"] = head
-    return ArtFile(row, values, match["tag"].lower(), match["ratio"].lower(), match["dimensions"].lower(), match["extension"].lower())
+    tag = match["tag"].lower()
+    return ArtFile(row, values, aliases.get(tag, tag), match["ratio"].lower(), match["dimensions"].lower(), match["extension"].lower())
 
 
 def profile_source_values(source: ArtFile, profile: NEBProfile, type_name: str) -> dict:
     values = dict(source.values)
-    recipe = profile.types[type_name]["templates"][values["language"]]["filename"]
+    recipe = profile.types[type_name]["templates"][values["language"] or "English"]["filename"]
     if "_{language}_" not in recipe:
         return values
     prefix = recipe.split("_{language}_", 1)[0]
@@ -323,7 +328,7 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
             source = replace(raw_source, values=profile_source_values(raw_source, profile, type_name))
             subject = {key: str(values.get(key, "")).strip() for key in keys}
             subject["language"] = values.get("language", "English")
-            if source.values["language"] != subject["language"]:
+            if source.values["language"] and source.values["language"] != subject["language"]:
                 continue
             if any(
                 definition["type"] == "select" and source.values.get(definition["key"])

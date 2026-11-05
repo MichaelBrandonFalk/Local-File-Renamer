@@ -7,6 +7,9 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, Mock, patch
 
 from local_file_renamer_app import LocalFileRenamerApp
+from local_file_renamer_core import RenameRow
+from neb_artwork_ui import NEBArtworkDialog
+from neb_artwork import parse_art_file
 from neb_artwork import COMBINED_TYPE, NEBError, NEBProfile, build_artwork_plan, copy_artwork_plan, episode_selection, fetch_current_profile, read_profile
 
 
@@ -43,6 +46,52 @@ class NEBArtworkTests(unittest.TestCase):
         with self.assertRaisesRegex(NEBError, "correct title"):
             self.plan("Movie")
         self.assertFalse(self.output.exists())
+
+    def test_iconik_series_without_language_uses_selected_language(self):
+        for variant in self.profile.types["Series"]["variants"]:
+            self.put(f"CarpoolingwithJesus_ProverbsForYourSchoolLife_{variant['artTag'].upper()}_{variant['aspectRatio']}_{variant['dimensions']}.{self.profile.extensions[variant['artTag']]}")
+        title = "carpooling_with_jesus_proverbs_for_your_school_life"
+        for language in ("English", "Spanish"):
+            with self.subTest(language=language):
+                plan = self.plan("Series", title=title, language=language)
+                self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), len(self.profile.types["Series"]["variants"]))
+                self.assertTrue(all(item.rows for item in plan.requirements))
+                expected = self.profile.filename("Series", {"title": title, "language": language}, self.profile.types["Series"]["variants"][0])
+                self.assertIn(expected, [row.desired_name for row in plan.rows])
+        copy_artwork_plan(plan, plan.rows, str(self.output))
+        self.assertEqual(len(list(self.output.iterdir())), len(plan.requirements))
+        self.assertEqual(len(list(self.source.iterdir())), len(plan.requirements))
+
+    def test_iconik_aliases_and_spacing(self):
+        for suffix, tag in (("CA _3x4_1920x2560.jpg", "ca"), ("CarouselArt_7x3_2450x1100.jpg", "ca"), ("TitleTreatment_9x5_1800x1000.png", "tt")):
+            with self.subTest(suffix=suffix):
+                row = RenameRow(str(self.source), f"Show_{suffix}")
+                parsed = parse_art_file(row, self.profile)
+                self.assertIsNotNone(parsed)
+                self.assertEqual(parsed.tag, tag)
+                self.assertEqual(parsed.values["title"], "Show")
+
+    def test_explicit_language_still_filters_source_art(self):
+        self.put("Show_las_bg_16x9_3840x2160.jpg")
+        with self.assertRaisesRegex(NEBError, "field filters"):
+            self.plan("Series", language="English")
+
+    def test_title_ending_in_short_language_code_is_not_a_language_label(self):
+        for title in ("Movies", "Series"):
+            parsed = parse_art_file(RenameRow(str(self.source), f"{title}_BG_16x9_3840x2160.jpg"), self.profile)
+            self.assertEqual(parsed.values["title"], title)
+            self.assertEqual(parsed.values["language"], "")
+
+    def test_unrecognized_files_remain_excluded(self):
+        for name in ("Show_16x9_3840x2160.jpg", "Show_RANDOM_16x9_3840x2160.jpg", "Show_BG_16x9.jpg", "notes.txt"):
+            with self.subTest(name=name):
+                self.assertIsNone(parse_art_file(RenameRow(str(self.source), name), self.profile))
+
+    def test_preview_error_status_is_not_a_profile_failure(self):
+        dialog = SimpleNamespace(busy=Mock(), profile_status=Mock())
+        with patch("neb_artwork_ui.messagebox.showerror"):
+            NEBArtworkDialog.failed(dialog, NEBError("No supported artwork"), "Preview could not be built. No files changed.")
+        dialog.profile_status.set.assert_called_once_with("Preview could not be built. No files changed.")
 
     def test_series_and_season_share_sources_but_copy_distinct_required_sets(self):
         for variant in self.profile.types["Series"]["variants"]:

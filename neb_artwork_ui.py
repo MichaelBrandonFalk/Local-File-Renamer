@@ -136,9 +136,9 @@ class NEBArtworkDialog(tk.Toplevel):
             if widget is not self.cancel_button and isinstance(widget, (ttk.Button, ttk.Entry, ttk.Checkbutton)):
                 widget.state(["disabled" if value else "!disabled"])
 
-    def failed(self, error):
+    def failed(self, error, status="Live profile verification failed. No files changed."):
         self.busy(False)
-        self.profile_status.set("Live profile verification failed. No files changed.")
+        self.profile_status.set(status)
         messagebox.showerror(APP_NAME, str(error), parent=self)
 
     def refresh_profile(self):
@@ -169,4 +169,4 @@ class NEBArtworkDialog(tk.Toplevel):
             self.parent.accept_neb_plan(plan, output)
             self.destroy()
 
-        background(self, build, complete, self.failed)
+        background(self, build, complete, lambda error: self.failed(error, "Preview could not be built. No files changed."))
