@@ -22,6 +22,15 @@ def export_app(folder, recursive=False):
 
 
 class FolderExportTests(unittest.TestCase):
+    def test_export_preserves_exact_folder_path(self):
+        source = "/example/ReviveSchool "
+        app = export_app(source)
+        with patch("local_file_renamer_app.scan_folder", return_value=[RenameRow(source, "art.jpg")]) as scan, patch(
+            "local_file_renamer_app.filedialog.asksaveasfilename", return_value=""
+        ):
+            LocalFileRenamerApp.export_scan(app, ".csv")
+        scan.assert_called_once_with(source, recursive=False)
+
     def test_export_buttons_populate_current_names_and_folder_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

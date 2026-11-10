@@ -3,6 +3,8 @@ import errno
 import os
 import tempfile
 import unittest
+import zipfile
+from xml.etree import ElementTree as ET
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -26,6 +28,49 @@ from local_file_renamer_core import (
 
 
 class LocalFileRenamerCoreTests(unittest.TestCase):
+    def test_plan_formats_preserve_trailing_space_in_folder_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = str(Path(tmp) / "ReviveSchool ")
+            expected = [RenameRow(folder, "old.jpg", "new.jpg")]
+            for suffix in (".csv", ".xlsx"):
+                with self.subTest(suffix=suffix):
+                    plan = Path(tmp) / f"plan{suffix}"
+                    write_rename_plan(str(plan), expected)
+                    self.assertEqual(load_rename_plan(str(plan)), expected)
+            with zipfile.ZipFile(Path(tmp) / "plan.xlsx") as archive:
+                sheet = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+                ns = {"s": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+                text = sheet.find(".//s:c[@r='A2']/s:is/s:t", ns)
+                self.assertEqual(text.get("{http://www.w3.org/XML/1998/namespace}space"), "preserve")
+
+    def test_shared_string_paths_preserve_whitespace(self):
+        from local_file_renamer_core import _xlsx_cell_value
+        cell = ET.fromstring('<c xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" t="s"><v>0</v></c>')
+        self.assertEqual(_xlsx_cell_value(cell, ["/example/ReviveSchool "]), "/example/ReviveSchool ")
+
+    @unittest.skipIf(os.name == "nt", "Windows does not distinguish trailing-space directory names")
+    def test_copy_and_rename_do_not_switch_to_trimmed_sibling_folder(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            exact, other, output = root / "ReviveSchool ", root / "ReviveSchool", root / "Copies "
+            exact.mkdir()
+            other.mkdir()
+            (exact / "old.jpg").write_bytes(b"correct artwork")
+            (other / "old.jpg").write_bytes(b"different artwork")
+            for suffix in (".csv", ".xlsx"):
+                plan = root / f"plan{suffix}"
+                write_rename_plan(str(plan), [RenameRow(str(exact), "old.jpg", f"new{suffix}.jpg")])
+                rows = load_rename_plan(str(plan))
+                result = copy_rows(rows, str(output))
+                self.assertTrue(result[0].status.startswith("Copied:"))
+                self.assertEqual((output / f"new{suffix}.jpg").read_bytes(), b"correct artwork")
+                self.assertEqual((other / "old.jpg").read_bytes(), b"different artwork")
+            self.assertFalse((root / "Copies").exists())
+            result = rename_rows([RenameRow(str(exact), "old.jpg", "renamed.jpg")])
+            self.assertTrue(result[0].status.startswith("Renamed"))
+            self.assertEqual((exact / "renamed.jpg").read_bytes(), b"correct artwork")
+            self.assertTrue((other / "old.jpg").exists())
+
     def test_scan_folder_lists_files_without_subfolders_by_default(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -42,7 +42,8 @@ def run_checks(report_path: Path) -> None:
 
         with tempfile.TemporaryDirectory(prefix="local-file-renamer-check-") as temporary:
             root = Path(temporary)
-            source = root / "source"
+            folder_suffix = "" if platform.system() == "Windows" else " "
+            source = root / f"source{folder_suffix}"
             source.mkdir()
             content = b"Local File Renamer portable package verification\n"
             (source / "original.txt").write_bytes(content)
@@ -63,7 +64,7 @@ def run_checks(report_path: Path) -> None:
                 with patch("local_file_renamer_app.messagebox.showerror") as error:
                     app.load_plan()
                 assert not error.called, error.call_args
-                output = root / f"copies-{suffix[1:]}"
+                output = root / f"copies-{suffix[1:]}{folder_suffix}"
                 app.output_folder_var.set(str(output))
                 app.copy_mode_var.set(True)
                 with patch("local_file_renamer_app.messagebox.askyesno", return_value=True), patch(
@@ -77,6 +78,11 @@ def run_checks(report_path: Path) -> None:
                 assert load_rename_plan(str(plan))[0].desired_name == "renamed.txt"
                 assert load_rename_plan(str(output / f"plan_results{suffix}"))[0].status.startswith("Copied:")
                 report["checks"].append(f"export-load-copy-results-{suffix[1:]}")
+            if folder_suffix:
+                assert not (root / "source").exists()
+                assert not (root / "copies-csv").exists()
+                assert not (root / "copies-xlsx").exists()
+                report["checks"].append("significant-folder-whitespace")
             app.copy_mode_var.set(False)
             app.update_output_controls()
             with patch("local_file_renamer_app.messagebox.askyesno", return_value=True), patch(
@@ -110,7 +116,7 @@ def run_checks(report_path: Path) -> None:
                         x, y = widget.winfo_rootx() - left, widget.winfo_rooty() - top
                         assert x >= 0 and y >= 0 and x + widget.winfo_width() <= dialog.winfo_width() + 1 and y + widget.winfo_height() <= dialog.winfo_height() + 1, str(widget)
             dialog.destroy()
-            art = root / "art"
+            art = root / f"art{folder_suffix}"
             art.mkdir()
             for episode in (1, 2):
                 for dimensions in ("3840x2160", "1920x1080", "2560x1440"):

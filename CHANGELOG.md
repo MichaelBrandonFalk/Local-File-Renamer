@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10 - 2026-11-10
+
+- Preserve significant trailing spaces in source and output folder names, including folders selected with Browse.
+- Preserve exact folder paths through CSV and Excel plan loading, export, and copy results.
+- Mark whitespace-bearing Excel text as preserved for compatibility with spreadsheet editors.
+
 ## 1.9 - 2026-11-05
 
 - Add opt-in shared artwork reuse for multiple selected episodes, accepting comma-separated numbers and ranges.

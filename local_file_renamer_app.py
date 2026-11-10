@@ -215,7 +215,7 @@ class LocalFileRenamerApp(tk.Tk):
             self.run_button.configure(text="Run Renames")
 
     def browse_output_folder(self) -> None:
-        output = Path(self.output_folder_var.get().strip()).expanduser()
+        output = Path(self.output_folder_var.get()).expanduser()
         initial = output if output.is_dir() else output.parent
         folder = filedialog.askdirectory(
             title="Choose output folder", initialdir=str(initial), mustexist=False
@@ -274,11 +274,11 @@ class LocalFileRenamerApp(tk.Tk):
             self.plan_var.set(plan_path)
 
     def export_scan(self, extension: str) -> None:
-        folder = self.folder_var.get().strip()
-        if not folder:
+        folder = self.folder_var.get()
+        if not folder.strip():
             self.browse_folder()
-            folder = self.folder_var.get().strip()
-        if not folder:
+            folder = self.folder_var.get()
+        if not folder.strip():
             return
 
         try:
@@ -404,8 +404,8 @@ class LocalFileRenamerApp(tk.Tk):
         copy_mode = self.copy_mode_var.get()
         output_folder = ""
         if copy_mode:
-            output_folder = self.output_folder_var.get().strip()
-            if not output_folder:
+            output_folder = self.output_folder_var.get()
+            if not output_folder.strip():
                 output_folder = str(default_copy_output_folder())
                 self.output_folder_var.set(output_folder)
             prompt = f"Copy and rename {len(runnable)} file(s) to:\n{output_folder}\n\nOriginal files will stay in place."

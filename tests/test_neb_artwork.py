@@ -93,6 +93,21 @@ class NEBArtworkTests(unittest.TestCase):
             NEBArtworkDialog.failed(dialog, NEBError("No supported artwork"), "Preview could not be built. No files changed.")
         dialog.profile_status.set.assert_called_once_with("Preview could not be built. No files changed.")
 
+    def test_preview_passes_exact_source_and_output_paths(self):
+        value = lambda text: Mock(get=Mock(return_value=text))
+        dialog = SimpleNamespace(
+            folder=value("/example/ReviveSchool "), output=value("/example/Output "),
+            selected_type=value("Series"), values={"title": value("Revive School"), "language": value("English")},
+            recursive=value(True), required_only=value(True), group_output=value(True), reuse_shared_art=value(False),
+            busy=Mock(), profile_status=Mock(), parent=Mock(), destroy=Mock(), failed=Mock(),
+        )
+        with patch("neb_artwork_ui.fetch_current_profile", return_value=self.profile), patch(
+            "neb_artwork_ui.build_artwork_plan"
+        ) as build, patch("neb_artwork_ui.background", side_effect=lambda owner, operation, done, failed: done(operation())):
+            NEBArtworkDialog.build_preview(dialog)
+        self.assertEqual(build.call_args.args[0], "/example/ReviveSchool ")
+        self.assertEqual(dialog.parent.accept_neb_plan.call_args.args[1], "/example/Output ")
+
     def test_series_and_season_share_sources_but_copy_distinct_required_sets(self):
         for variant in self.profile.types["Series"]["variants"]:
             self.put(self.profile.filename("Series", {"title": "Original Series", "language": "English"}, variant))

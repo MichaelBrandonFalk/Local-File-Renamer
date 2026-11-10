@@ -156,8 +156,8 @@ class NEBArtworkDialog(tk.Toplevel):
         background(self, fetch_current_profile, loaded, self.failed)
 
     def build_preview(self):
-        folder, output, selected = self.folder.get().strip(), self.output.get().strip(), self.selected_type.get()
-        if not folder or not output:
+        folder, output, selected = self.folder.get(), self.output.get(), self.selected_type.get()
+        if not folder.strip() or not output.strip():
             messagebox.showerror(APP_NAME, "Source and output folders are required.", parent=self)
             return
         values = {key: variable.get().strip() for key, variable in self.values.items()}

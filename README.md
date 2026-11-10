@@ -48,6 +48,8 @@ The `.xlsx` spreadsheet uses the same columns. `desired_name` must be a file nam
 
 Exports populate `folder_location` and `current_name` for each file found. The `desired_name` and `status` columns start blank. Enable `Include subfolders` to list files inside nested folders. If macOS blocks access, choose the folder with `Browse` and grant the app access in System Settings > Privacy & Security > Files and Folders.
 
+Folder names can contain significant trailing spaces on macOS and Linux. Use `Browse` to select the exact folder; the app preserves its full path, including whitespace, in scans, NEB previews, CSV/Excel plans, and copy destinations. It does not silently substitute another folder with a trimmed name.
+
 ## NEB Artwork
 
 Open `NEB Artwork` to build a delivery set directly from downloaded artwork, without spreadsheet replacements or lookups.

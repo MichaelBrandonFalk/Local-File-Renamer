@@ -19,7 +19,7 @@ from xml.etree import ElementTree as ET
 
 
 APP_NAME = "Local File Renamer"
-APP_VERSION = "1.9"
+APP_VERSION = "1.10"
 CSV_HEADERS = ["folder_location", "current_name", "desired_name", "status"]
 PLAN_EXTENSIONS = (".csv", ".xlsx")
 XML_MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -50,7 +50,7 @@ class RenameRow:
     @classmethod
     def from_mapping(cls, row: dict[str, str]) -> "RenameRow":
         return cls(
-            folder_location=(row.get("folder_location") or "").strip(),
+            folder_location=row.get("folder_location") or "",
             current_name=(row.get("current_name") or "").strip(),
             desired_name=(row.get("desired_name") or "").strip(),
             status=(row.get("status") or "").strip(),
@@ -534,18 +534,18 @@ def _xlsx_cell_value(cell: ET.Element, shared_strings: List[str]) -> str:
     cell_type = cell.attrib.get("t")
 
     if cell_type == "inlineStr":
-        return "".join(text.text or "" for text in cell.findall(f".//{{{XML_MAIN_NS}}}t")).strip()
+        return "".join(text.text or "" for text in cell.findall(f".//{{{XML_MAIN_NS}}}t"))
 
     value = cell.find(f"{{{XML_MAIN_NS}}}v")
     raw = value.text if value is not None and value.text is not None else ""
 
     if cell_type == "s":
         try:
-            return shared_strings[int(raw)].strip()
+            return shared_strings[int(raw)]
         except (ValueError, IndexError):
             return ""
 
-    return raw.strip()
+    return raw
 
 
 def _cell_column_index(cell_ref: str) -> int:
@@ -580,6 +580,8 @@ def _xlsx_sheet_xml(rows: List[List[str]]) -> str:
             inline = ET.SubElement(cell_el, f"{{{XML_MAIN_NS}}}is")
             text = ET.SubElement(inline, f"{{{XML_MAIN_NS}}}t")
             text.text = str(value)
+            if text.text != text.text.strip():
+                text.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
 
     return _xml_bytes(root)
 
