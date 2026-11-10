@@ -166,12 +166,88 @@ class NEBArtworkTests(unittest.TestCase):
             build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1"}, reuse_shared_art=True)
         self.assertFalse(self.output.exists())
 
-    def test_shared_mode_does_not_reassign_numbered_episode_files(self):
+    def test_without_shared_mode_numbered_files_stay_with_their_episode(self):
         self.put("Show_s01_e01_eng_bg_16x9_3840x2160.jpg")
-        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "1-3", "language": "English"}, reuse_shared_art=True)
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "1-3", "language": "English"})
         self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), 1)
         self.assertEqual(sum(not item.rows for item in plan.requirements), 5)
         self.assertTrue(all(not item.rows for item in plan.requirements if item.destination != "s01_e01"))
+
+    def test_numbered_podcast_art_reuses_all_three_variants_for_eighteen_episodes(self):
+        values = {"title": "revive_school", "season": "1", "language": "English"}
+        for variant in self.profile.types["Podcast Episodes"]["variants"]:
+            self.put(self.profile.filename("Podcast Episodes", {**values, "episode": "1"}, variant))
+        original_names = {path.name for path in self.source.iterdir()}
+        for selection in ("1-18", ",".join(str(number) for number in range(1, 19))):
+            with self.subTest(selection=selection):
+                plan = build_artwork_plan(str(self.source), self.profile, "Podcast Episodes", {**values, "episode": selection}, reuse_shared_art=True)
+                self.assertEqual(len(plan.requirements), 54)
+                self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), 54)
+                self.assertTrue(all(len(item.rows) == 1 for item in plan.requirements))
+                self.assertEqual({item.destination for item in plan.requirements}, {f"s01_e{number:02d}" for number in range(1, 19)})
+                self.assertTrue(all(row.current_name in original_names for row in plan.rows))
+        copy_artwork_plan(plan, plan.rows, str(self.output))
+        self.assertEqual(len(list(self.output.rglob("*.jpg"))), 54)
+        self.assertEqual({path.name for path in self.source.iterdir()}, original_names)
+        self.assertTrue(all(path.read_bytes() == b"original artwork" for path in self.output.rglob("*.jpg")))
+
+    def test_reuse_can_start_after_the_source_episode_number(self):
+        self.put("Show_s01_e01_eng_bg_16x9_3840x2160.jpg")
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "7-8", "language": "English"}, reuse_shared_art=True)
+        self.assertEqual({row.desired_name for row in plan.rows if row.desired_name}, {f"show_s01_e{number:02d}_eng_bg_16x9_3840x2160.jpg" for number in (7, 8)})
+        self.assertEqual({item.destination for item in plan.requirements}, {"s01_e07", "s01_e08"})
+
+    def test_range_labelled_templates_work_for_every_episode_based_art_type(self):
+        for type_name in self.profile.types:
+            if not any(item["key"] == "episode" for item in self.profile.fields(type_name)):
+                continue
+            example = next(item for item in self.profile.document["artExamples"] if item["type"] == type_name and item["values"]["language"] == "English")
+            values = {**example["values"], "title": "Revive School", "episode": "1"}
+            for suffix in ("e01-e26", "e01-26"):
+                with self.subTest(type_name=type_name, suffix=suffix):
+                    for path in self.source.iterdir():
+                        path.unlink()
+                    variants = self.profile.types[type_name]["variants"]
+                    for variant in variants:
+                        filename = self.profile.filename(type_name, values, variant)
+                        self.put(filename.replace("_e01_", f"_{suffix}_"))
+                    for selection, count in (("1-26", 26), ("1,7,26", 3)):
+                        plan = build_artwork_plan(str(self.source), self.profile, type_name, {**values, "episode": selection}, reuse_shared_art=True)
+                        self.assertEqual(len(plan.requirements), count * len(variants))
+                        self.assertTrue(all(len(item.rows) == 1 for item in plan.requirements))
+                        self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), count * len(variants))
+
+    def test_range_template_infers_title_and_season_without_including_range_in_title(self):
+        self.put("revive_school_s01_e01-e26_eng_bg_16x9_1920x1080.jpg")
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"episode": "7-8", "language": "English"}, reuse_shared_art=True)
+        self.assertEqual({row.desired_name for row in plan.rows if row.desired_name}, {f"revive_school_s01_e{number:02d}_eng_bg_16x9_1920x1080.jpg" for number in (7, 8)})
+
+    def test_range_templates_require_opt_in_even_with_a_single_target_episode(self):
+        self.put("revive_school_s01_e01-e26_eng_bg_16x9_1920x1080.jpg")
+        for selection in ("7", "1-26"):
+            with self.subTest(selection=selection), self.assertRaisesRegex(NEBError, "source filenames contain an episode range"):
+                self.plan(season="1", episode=selection)
+
+    def test_descending_source_episode_range_is_rejected(self):
+        self.put("revive_school_s01_e26-e01_eng_bg_16x9_1920x1080.jpg")
+        with self.assertRaisesRegex(NEBError, "ascending"):
+            build_artwork_plan(str(self.source), self.profile, "Episode", {"episode": "1-26", "language": "English"}, reuse_shared_art=True)
+
+    def test_reuse_of_multiple_numbered_sources_still_requires_conflict_selection(self):
+        for episode in (1, 2):
+            self.put(f"Show_s01_e{episode:02d}_eng_bg_16x9_3840x2160.jpg")
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "1-3", "language": "English"}, reuse_shared_art=True)
+        conflicts = [item for item in plan.requirements if len(item.rows) > 1]
+        self.assertEqual(len(conflicts), 3)
+        self.assertTrue(all(not row.desired_name for item in conflicts for row in item.rows))
+        copy_artwork_plan(plan, plan.rows, str(self.output))
+        self.assertFalse(self.output.exists())
+
+    def test_shared_episode_override_does_not_change_language_or_season_filters(self):
+        for filename in ("Show_s02_e01_eng_bg_16x9_3840x2160.jpg", "Show_s01_e01_las_bg_16x9_3840x2160.jpg"):
+            self.put(filename)
+        with self.assertRaisesRegex(NEBError, "field filters"):
+            build_artwork_plan(str(self.source), self.profile, "Episode", {"title": "Show", "season": "1", "episode": "1-3", "language": "English"}, reuse_shared_art=True)
 
     def test_shared_reuse_preserves_conflicts_and_supports_flat_output(self):
         self.put("Show_BG_16x9_3840x2160.jpg")

@@ -227,12 +227,16 @@ def parse_art_file(row: RenameRow, profile: NEBProfile) -> ArtFile | None:
     language = match["language"]
     values = {"language": ("Spanish" if language.casefold() in {profile.rules["spanishArt"].casefold(), "las"} else "English") if language else ""}
     values["source_prefix"] = head
-    episode = re.search(r"(?:s([0-9]{1,4})[_ .-]*)?(?:e|episode[_ .-]*)([0-9]{1,3})$", head, flags=re.I)
+    episode = re.search(r"(?:s([0-9]{1,4})[_ .-]*)?(?:e|episode[_ .-]*)([0-9]{1,3})(?:-e?([0-9]{1,3}))?$", head, flags=re.I)
     season = re.search(r"(?:^|[_ .-])s([0-9]{1,4})$", head, flags=re.I)
     if episode:
         if episode[1]:
             values["year" if len(episode[1]) == 4 else "season"] = str(int(episode[1]))
-        values["episode"] = str(int(episode[2]))
+        if episode[3]:
+            episode_selection(f"{episode[2]}-{episode[3]}")
+            values["episode_range"] = f"{int(episode[2])}-{int(episode[3])}"
+        else:
+            values["episode"] = str(int(episode[2]))
         head = head[:episode.start()].rstrip("_ .-")
     elif season:
         values["year" if len(season[1]) == 4 else "season"] = str(int(season[1]))
@@ -329,7 +333,11 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
         sources = []
         for raw_source in files:
             source = replace(raw_source, values=profile_source_values(raw_source, profile, type_name))
-            if reuse_shared_art and "episode" in keys and not source.values.get("episode"):
+            if "episode" in keys and source.values.get("episode_range") and not reuse_shared_art:
+                problems[id(source.row)] = "Needs input: source filenames contain an episode range. Enable 'Reuse shared artwork for selected episodes' and enter the episodes to receive copies."
+                continue
+            # Explicit reuse treats source episode labels as template labels, not filters.
+            if reuse_shared_art and "episode" in keys:
                 sources.extend(replace(source, values={**source.values, "episode": str(episode)}) for episode in sorted(wanted_episodes))
             else:
                 sources.append(source)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.11 - 2026-11-10
+
+- Explicit shared-art reuse now applies to source art already labelled with an episode number, including Podcast Episodes.
+- Recognize source episode ranges such as `s01_e01-e26` and `s01_e01-26` across all episode-based art types; the explicit Episode(s) selection controls output copies in reuse mode.
+- Keep normal numbered-episode matching when reuse is off; preserve season/language filters and duplicate-source conflicts in reuse mode.
+- Verify three episode-1 podcast assets produce all 54 required copies for episodes 1-18 without changing originals.
+
 ## 1.10 - 2026-11-10
 
 - Preserve significant trailing spaces in source and output folder names, including folders selected with Browse.

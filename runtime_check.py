@@ -149,6 +149,30 @@ def run_checks(report_path: Path) -> None:
             assert len(list(shared.glob("*.jpg"))) == 2
             assert all(path.read_bytes() == content for path in shared_output.rglob("*.jpg"))
             report["checks"].append("neb-shared-art-twelve-episode-copy")
+            podcast = root / "podcast-template"
+            podcast.mkdir()
+            values = {"title": "Example Podcast", "season": "1", "language": "English"}
+            for variant in profile.types["Podcast Episodes"]["variants"]:
+                filename = profile.filename("Podcast Episodes", {**values, "episode": "1"}, variant)
+                (podcast / filename).write_bytes(content)
+            podcast_plan = build_artwork_plan(str(podcast), profile, "Podcast Episodes", {**values, "episode": "1-18"}, reuse_shared_art=True)
+            podcast_output = root / "podcast-copies"
+            copy_artwork_plan(podcast_plan, podcast_plan.rows, str(podcast_output))
+            assert len(list(podcast_output.rglob("*.jpg"))) == 54
+            assert len(list(podcast.glob("*.jpg"))) == 3
+            assert all(path.read_bytes() == content for path in podcast_output.rglob("*.jpg"))
+            report["checks"].append("neb-numbered-podcast-art-eighteen-episode-reuse")
+            ranged = root / "range-template"
+            ranged.mkdir()
+            for dimensions in ("3840x2160", "1920x1080"):
+                (ranged / f"Show_s01_e01-e26_eng_bg_16x9_{dimensions}.jpg").write_bytes(content)
+            range_plan = build_artwork_plan(str(ranged), profile, "Episode", {"language": "English", "episode": "1-26"}, reuse_shared_art=True)
+            range_output = root / "range-copies"
+            copy_artwork_plan(range_plan, range_plan.rows, str(range_output))
+            assert len(list(range_output.rglob("*.jpg"))) == 52
+            assert len(list(ranged.glob("*.jpg"))) == 2
+            assert all(path.read_bytes() == content for path in range_output.rglob("*.jpg"))
+            report["checks"].append("neb-range-labelled-episode-art-twenty-six-episode-reuse")
         report["success"] = True
     except Exception:
         report["success"] = False
