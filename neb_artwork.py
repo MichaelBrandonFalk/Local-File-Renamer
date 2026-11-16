@@ -330,6 +330,7 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
     plan_rows = []
     consumed = set()
     problems = {}
+    filename_warnings = {}
     for source in files:
         expected = {
             variant["aspectRatio"] for definition in profile.types.values()
@@ -337,7 +338,7 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
             if (variant["artTag"], variant["dimensions"]) == (source.tag, source.dimensions)
         }
         if expected and source.ratio not in expected:
-            problems[id(source.row)] = f"Excluded: filename aspect ratio {source.ratio} does not match NEB's {' / '.join(sorted(expected))} for {source.tag} {source.dimensions}. Check the source filename."
+            filename_warnings[id(source.row)] = f"Excluded: filename aspect ratio {source.ratio} does not match NEB's {' / '.join(sorted(expected))} for {source.tag} {source.dimensions}. Check the source filename."
     for type_name in types:
         definition = profile.types[type_name]
         keys = {item["key"] for item in profile.fields(type_name)}
@@ -448,7 +449,7 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
                 requirements.append(requirement)
     for row in raw_rows:
         if id(row) not in consumed:
-            row.status = problems.get(id(row), "Excluded: not required for the selected type, language, or episodes")
+            row.status = problems.get(id(row), filename_warnings.get(id(row), "Excluded: not required for the selected type, language, or episodes"))
             plan_rows.append(row)
     targets = {}
     for requirement in requirements:

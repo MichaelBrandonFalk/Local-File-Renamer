@@ -112,6 +112,12 @@ class NEBArtworkTests(unittest.TestCase):
         self.assertEqual(len(conflicts), 2)
         self.assertTrue(all(not row.desired_name for row in conflicts))
 
+    def test_ratio_warnings_do_not_mask_required_input_errors(self):
+        self.put("Show_e01_bg_eng_11x1_3000x3000.jpg")
+        self.put("Show_e01_bg_eng_16x9_3840x2160.jpg")
+        with self.assertRaisesRegex(NEBError, "Season is required"):
+            self.plan()
+
     def test_neb_browse_defaults_to_downloads_and_honors_existing_paths(self):
         downloads = self.root / "Downloads"
         selected = self.root / "Selected folder"
