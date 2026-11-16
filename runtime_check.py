@@ -115,6 +115,13 @@ def run_checks(report_path: Path) -> None:
                     if widget.winfo_ismapped():
                         x, y = widget.winfo_rootx() - left, widget.winfo_rooty() - top
                         assert x >= 0 and y >= 0 and x + widget.winfo_width() <= dialog.winfo_width() + 1 and y + widget.winfo_height() <= dialog.winfo_height() + 1, str(widget)
+            downloads_fixture = root / "Downloads"
+            downloads_fixture.mkdir()
+            dialog.folder.set("")
+            with patch("neb_artwork_ui.downloads_folder", return_value=downloads_fixture), patch("neb_artwork_ui.filedialog.askdirectory", return_value="") as browse:
+                dialog.browse(dialog.folder)
+            assert browse.call_args.kwargs["initialdir"] == str(downloads_fixture)
+            report["checks"].append("neb-browse-defaults-to-downloads")
             dialog.destroy()
             art = root / f"art{folder_suffix}"
             art.mkdir()
@@ -173,6 +180,22 @@ def run_checks(report_path: Path) -> None:
             assert len(list(ranged.glob("*.jpg"))) == 2
             assert all(path.read_bytes() == content for path in range_output.rglob("*.jpg"))
             report["checks"].append("neb-range-labelled-episode-art-twenty-six-episode-reuse")
+            nested = root / "nested-art"
+            for dimensions, ratio in (("1920x1080", "16x9"), ("3840x2160", "16x9"), ("3000x3000", "1x1")):
+                directory = nested / dimensions
+                directory.mkdir(parents=True)
+                for episode in range(1, 26):
+                    source_ratio = "11x1" if ratio == "1x1" and episode > 1 else ratio
+                    (directory / f"Show_s01_e{episode:02d}_bg_eng_{source_ratio}_{dimensions}.jpg").write_bytes(content)
+            nested_plan = build_artwork_plan(str(nested), profile, "Episode", {"title": "Show", "season": "1", "episode": "1-25", "language": "English"})
+            assert all(len(item.rows) == 1 for item in nested_plan.requirements)
+            assert sum("aspect ratio 11x1" in row.status for row in nested_plan.rows) == 24
+            nested_output = root / "nested-copies"
+            copy_artwork_plan(nested_plan, nested_plan.rows, str(nested_output))
+            assert len(list(nested_output.rglob("*.jpg"))) == 50
+            assert len(list(nested.rglob("*.jpg"))) == 75
+            assert all(path.read_bytes() == content for path in nested_output.rglob("*.jpg"))
+            report["checks"].append("neb-nested-resolution-folders-reversed-tokens-and-ratio-warnings")
         report["success"] = True
     except Exception:
         report["success"] = False

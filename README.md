@@ -54,6 +54,8 @@ Folder names can contain significant trailing spaces on macOS and Linux. Use `Br
 
 Open `NEB Artwork` to build a delivery set directly from downloaded artwork, without spreadsheet replacements or lookups.
 
+Browse starts in Downloads when no folder is selected. Existing folder selections are honored; an output folder that does not yet exist opens its existing parent. Enable `Include subfolders` to scan artwork grouped into resolution folders. Both source orders (`_eng_bg_` and `_bg_eng_`) are recognized; output names always follow the current NEB recipe. Incorrect aspect-ratio labels are flagged, not silently repaired. Standard Episode deliveries and Podcast Episodes have different required variants; consult the live profile for the selected type.
+
 1. Choose the source folder and artwork type. The type choices and required variants come from NEB's current default profile.
 2. Enter a `Title override` to replace placeholders or correct a title. Leave it blank to normalize the title already in each filename.
 3. For `Series + Season`, select the season. The same source files are copied into separate `Series` and `Season NN` folders under the output, with their respective NEB filenames and required art sets. Originals are unchanged.

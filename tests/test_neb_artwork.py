@@ -71,6 +71,68 @@ class NEBArtworkTests(unittest.TestCase):
                 self.assertEqual(parsed.tag, tag)
                 self.assertEqual(parsed.values["title"], "Show")
 
+    def test_art_tag_before_language_preserves_episode_metadata_and_aliases(self):
+        for suffix, language, tag in (("bg_eng_16x9_1920x1080.jpg", "English", "bg"), ("BG_LAS_16x9_3840x2160.jpg", "Spanish", "bg"), (f"ca_{self.profile.rules['spanishArt']}_1x1_3000x3000.jpg", "Spanish", "ca"), ("TitleTreatment_eng_9x5_1800x1000.png", "English", "tt")):
+            with self.subTest(suffix=suffix):
+                parsed = parse_art_file(RenameRow(str(self.source), f"Show_s01_e07_{suffix}"), self.profile)
+                self.assertIsNotNone(parsed)
+                self.assertEqual(parsed.values["title"], "Show")
+                self.assertEqual(parsed.values["season"], "1")
+                self.assertEqual(parsed.values["episode"], "7")
+                self.assertEqual(parsed.values["language"], language)
+                self.assertEqual(parsed.tag, tag)
+
+    def test_nested_resolution_folders_and_incorrect_square_ratios(self):
+        for dimensions, ratio in (("1920x1080", "16x9"), ("3840x2160", "16x9"), ("3000x3000", "1x1")):
+            directory = self.source / dimensions
+            directory.mkdir()
+            for episode in range(1, 26):
+                source_ratio = "11x1" if ratio == "1x1" and episode > 1 else ratio
+                (directory / f"carpooling_to_christmas_s01_e{episode:02d}_bg_eng_{source_ratio}_{dimensions}.jpg").write_bytes(b"original")
+        values = {"title": "Carpooling to Christmas", "season": "1", "episode": "1-25", "language": "English"}
+        plan = build_artwork_plan(str(self.source), self.profile, "Episode", values)
+        self.assertEqual(sum(bool(row.desired_name) for row in plan.rows), 50)
+        self.assertTrue(all(len(item.rows) == 1 for item in plan.requirements))
+        self.assertEqual(sum("aspect ratio 11x1" in row.status for row in plan.rows), 24)
+        self.assertTrue(all("_eng_bg_" in row.desired_name for row in plan.rows if row.desired_name))
+        copy_artwork_plan(plan, plan.rows, str(self.output))
+        self.assertEqual(len(list(self.output.rglob("*.jpg"))), 50)
+        self.assertEqual(len(list(self.source.rglob("*.jpg"))), 75)
+        podcast = build_artwork_plan(str(self.source), self.profile, "Podcast Episodes", values)
+        self.assertEqual(sum(bool(row.desired_name) for row in podcast.rows), 51)
+        self.assertEqual(sum(not item.rows for item in podcast.requirements), 24)
+        with self.assertRaisesRegex(NEBError, "No supported artwork"):
+            build_artwork_plan(str(self.source), self.profile, "Episode", values, recursive=False)
+
+    def test_both_source_token_orders_remain_a_duplicate_conflict(self):
+        self.put("Show_s01_e01_eng_bg_16x9_3840x2160.jpg")
+        self.put("Show_s01_e01_bg_eng_16x9_3840x2160.jpg")
+        plan = self.plan()
+        conflicts = [row for row in plan.rows if row.status.startswith("Conflict:")]
+        self.assertEqual(len(conflicts), 2)
+        self.assertTrue(all(not row.desired_name for row in conflicts))
+
+    def test_neb_browse_defaults_to_downloads_and_honors_existing_paths(self):
+        downloads = self.root / "Downloads"
+        selected = self.root / "Selected folder"
+        downloads.mkdir()
+        selected.mkdir()
+        for current, expected in (("", downloads), ("   ", downloads), (str(selected), selected), (str(downloads / "New Output"), downloads), (str(self.root / "missing" / "folder"), downloads)):
+            with self.subTest(current=current):
+                variable = Mock(get=Mock(return_value=current))
+                dialog = SimpleNamespace()
+                with patch("neb_artwork_ui.downloads_folder", return_value=downloads), patch("neb_artwork_ui.filedialog.askdirectory", return_value=str(selected)) as browse:
+                    NEBArtworkDialog.browse(dialog, variable)
+                self.assertEqual(browse.call_args.kwargs["initialdir"], str(expected))
+                variable.set.assert_called_once_with(str(selected))
+
+    def test_neb_browse_cancel_preserves_value_and_missing_downloads_falls_back_home(self):
+        variable = Mock(get=Mock(return_value=""))
+        with patch("neb_artwork_ui.downloads_folder", return_value=self.root / "Missing Downloads"), patch("neb_artwork_ui.filedialog.askdirectory", return_value="") as browse:
+            NEBArtworkDialog.browse(SimpleNamespace(), variable)
+        self.assertEqual(browse.call_args.kwargs["initialdir"], str(Path.home()))
+        variable.set.assert_not_called()
+
     def test_explicit_language_still_filters_source_art(self):
         self.put("Show_las_bg_16x9_3840x2160.jpg")
         with self.assertRaisesRegex(NEBError, "field filters"):

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12 - 2026-11-16
+
+- Start NEB Artwork folder browsing in Downloads when no folder is selected; honor existing selections and output-folder parents.
+- Recognize source filenames with the art tag before the language, such as `_bg_eng_`, including nested episode artwork.
+- Flag source aspect-ratio labels that conflict with the current NEB definitions for their art tag and dimensions; never silently relabel artwork.
+
 ## 1.11 - 2026-11-10
 
 - Explicit shared-art reuse now applies to source art already labelled with an episode number, including Podcast Episodes.

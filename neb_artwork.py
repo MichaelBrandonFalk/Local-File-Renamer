@@ -216,10 +216,16 @@ def parse_art_file(row: RenameRow, profile: NEBProfile) -> ArtFile | None:
     aliases = {name: tag for name, tag in aliases.items() if tag in profile.extensions}
     tags = "|".join(re.escape(tag) for tag in sorted(set(profile.extensions) | set(aliases), key=len, reverse=True))
     languages = "|".join((r"(?<=[_ .-])" if len(code) < 3 else "") + re.escape(code) for code in sorted({profile.rules["englishArt"], profile.rules["spanishArt"], "eng", "las"}, key=len, reverse=True))
+    suffix = r"\s*_(?P<ratio>[0-9]+x[0-9]+)_(?P<dimensions>[0-9]+x[0-9]+)(?:[_ -]+v[0-9]+| ?\([0-9]+\))?\.(?P<extension>jpg|jpeg|png)"
     match = re.fullmatch(
-        rf"(?P<head>.*?)(?:(?P<language>{languages})_|_)(?P<tag>{tags})\s*_(?P<ratio>[0-9]+x[0-9]+)_(?P<dimensions>[0-9]+x[0-9]+)(?:[_ -]+v[0-9]+| ?\([0-9]+\))?\.(?P<extension>jpg|jpeg|png)",
+        rf"(?P<head>.*?)(?:(?P<language>{languages})_|_)(?P<tag>{tags})" + suffix,
         row.current_name, flags=re.I,
     )
+    if not match:
+        match = re.fullmatch(
+            rf"(?P<head>.*?)_(?P<tag>{tags})\s*_(?P<language>{languages})" + suffix,
+            row.current_name, flags=re.I,
+        )
     if not match:
         return None
     head = match["head"].rstrip("_ .-")
@@ -324,6 +330,14 @@ def build_artwork_plan(folder: str, profile: NEBProfile, selected_type: str, val
     plan_rows = []
     consumed = set()
     problems = {}
+    for source in files:
+        expected = {
+            variant["aspectRatio"] for definition in profile.types.values()
+            for variant in (*definition.get("variants", []), *definition.get("sizes", []))
+            if (variant["artTag"], variant["dimensions"]) == (source.tag, source.dimensions)
+        }
+        if expected and source.ratio not in expected:
+            problems[id(source.row)] = f"Excluded: filename aspect ratio {source.ratio} does not match NEB's {' / '.join(sorted(expected))} for {source.tag} {source.dimensions}. Check the source filename."
     for type_name in types:
         definition = profile.types[type_name]
         keys = {item["key"] for item in profile.fields(type_name)}

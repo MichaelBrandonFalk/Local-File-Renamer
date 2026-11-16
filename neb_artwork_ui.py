@@ -6,7 +6,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-from local_file_renamer_core import APP_NAME, default_copy_output_folder
+from local_file_renamer_core import APP_NAME, default_copy_output_folder, downloads_folder
 from neb_artwork import COMBINED_TYPE, NEBError, build_artwork_plan, fetch_current_profile, profile_cache_path, read_profile
 
 
@@ -95,7 +95,17 @@ class NEBArtworkDialog(tk.Toplevel):
             parent.after(50, lambda: self.refresh_profile() if self.winfo_exists() else None)
 
     def browse(self, variable):
-        folder = filedialog.askdirectory(parent=self, title="Choose folder", mustexist=False)
+        value = variable.get()
+        current = Path(value).expanduser() if value.strip() else downloads_folder()
+        if current.is_dir():
+            initial = current
+        elif value.strip() and current.parent.is_dir():
+            initial = current.parent
+        else:
+            initial = downloads_folder()
+            if not initial.is_dir():
+                initial = Path.home()
+        folder = filedialog.askdirectory(parent=self, title="Choose folder", initialdir=str(initial), mustexist=False)
         if folder:
             variable.set(folder)
 
